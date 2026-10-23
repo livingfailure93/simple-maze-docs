@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simple Maze - API Reference</title>
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+<div class="page-wrap">
+
+  <div class="format-selector" id="top">
+    <span class="format-label">View:</span>
+    <a href="index.html" class="format-link">Multi-Page</a>
+    <a href="single-page.html" class="format-link">Single Page</a>
+  </div>
+
+  <nav class="navbar"><ul>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="quick-start.html">Quick Start</a></li>
+    <li><a href="generating.html">Generating</a></li>
+    <li><a href="api-reference.html" class="active">API Reference</a></li>
+    <li><a href="demos.html">Demos</a></li>
+    <li><a href="troubleshooting.html">Troubleshooting</a></li>
+    <li><a href="about.html">About</a></li>
+  </ul></nav>
+
+  <div class="hero">
+    <h1>API Reference</h1>
+    <p class="tagline">The public surface: generating, the maze data, playing, solving, pictures, assets and the demo.</p>
+  </div>
+
+  <div class="page-layout">
+    <aside class="toc">
+      <h3>On this page</h3>
+      <ul>
+        <li><a href="#layout">Assemblies</a></li>
+        <li><a href="#generator">MazeGenerator</a></li>
+        <li><a href="#settings">MazeSettings and enums</a></li>
+        <li><a href="#data">MazeData</a></li>
+        <li><a href="#cells">Cells and slots</a></li>
+        <li><a href="#play">Playing: MazeRules</a></li>
+        <li><a href="#solver">Solving and rating</a></li>
+        <li><a href="#presets">Presets and Auto</a></li>
+        <li><a href="#pictures">Pictures</a></li>
+        <li><a href="#shapes">Shapes</a></li>
+        <li><a href="#topology">Topology</a></li>
+        <li><a href="#assets">ScriptableObjects</a></li>
+        <li><a href="#demo">Demo components</a></li>
+        <li><a href="#blocks">Building blocks</a></li>
+      </ul>
+    </aside>
+    <main class="content">
+
+      <div class="section">
+        <h2 id="layout">Assemblies</h2>
+        <table>
+          <tr><th>Assembly and namespace</th><th>What's in it</th></tr>
+          <tr><td><code>SimpleMaze</code></td><td>The core: generation, the maze data, the play rules, the solver, pictures
+            and the ScriptableObjects. It references no packages, and everything except the two asset types is plain C#
+            that also runs outside Unity.</td></tr>
+          <tr><td><code>SimpleMaze.Demo</code></td><td>The 3D demo: the view, the game, the HUD, the hub, sounds and
+            effects. It uses the Input System and Unity UI packages, and HDRP when that package is installed.</td></tr>
+          <tr><td><code>SimpleMaze.Editor</code></td><td>The Maze Generator window, the inspectors and the documentation
+            menu. Editor only.</td></tr>
+        </table>
+        <p>Everything below is in the <span class="k">SimpleMaze</span> namespace unless it says
+          <span class="k">SimpleMaze.Demo</span>.</p>
+      </div>
+
+      <div class="section">
+        <h2 id="generator">MazeGenerator</h2>
+        <p>The entry point. Every method copies and clamps the settings first, so your object is never changed, and the
+          same settings with the same seed always give the same maze. A null settings object means the defaults, and an
+          empty seed means a fresh random one.</p>
+        <table>
+          <tr><th>Method</th><th>What it does</th></tr>
+          <tr><td><code>MazeData Generate(MazeSettings settings)</code></td><td>One maze from this exact seed, solved and
+            rated.</td></tr>
+          <tr><td><code>MazeData GenerateVerified(MazeSettings settings, CancellationToken cancel = default)</code></td>
+            <td>Tries the seed, then the seed with <code>#1</code>, <code>#2</code> and so on, up to
+            <code>MaxAttempts</code>, until a maze is sound: solvable, a fair race, no soft-lock and enough coverage when
+            asked for, and the target stars. On a miss it returns the closest maze with a note. If it is cancelled before
+            the first maze, it throws <code>OperationCanceledException</code>.</td></tr>
+          <tr><td><code>List&lt;MazeData&gt; GenerateBatch(MazeSettings settings, int count, CancellationToken cancel = default)</code></td>
+            <td>A pack of verified mazes with seeds <code>root-0</code>, <code>root-1</code> and so on.</td></tr>
+          <tr><td><code>Task&lt;MazeData&gt; GenerateAsync(...)</code>, <code>GenerateVerifiedAsync(...)</code></td><td>The same
+            on a background thread.</td></tr>
+          <tr><td><code>Task&lt;List&lt;MazeData&gt;&gt; GenerateBatchAsync(MazeSettings settings, int count, IProgress&lt;int&gt; progress = null, CancellationToken cancel = default)</code></td>
+            <td>A batch on a background thread, reporting how many are done (1 to count).</td></tr>
+        </table>
+      </div>
+
+      <div class="section">
+        <h2 id="settings">MazeSettings and enums</h2>
+        <p><span class="k">MazeSettings</span> holds every input to the generator. Each field, its range and what it
+          does is on the <a href="generating.html">Generating</a> page. It also has:</p>
+        <table>
+          <tr><th>Member</th><th>What it does</th></tr>
+          <tr><td><code>MazeSettings Clamp()</code></td><td>Puts every field into its valid range, in place, and returns
+            the same object.</td></tr>
+          <tr><td><code>MazeSettings Clone()</code></td><td>A copy.</td></tr>
+          <tr><td><code>bool HasGimmicks</code></td><td>True when any gimmick is asked for.</td></tr>
+        </table>
+        <table>
+          <tr><th>Enum</th><th>Values</th></tr>
+          <tr><td><code>GridShape</code></td><td>Square, Hex, Triangle, Circular</td></tr>
+          <tr><td><code>CarveAlgorithm</code></td><td>RecursiveBacktracker, Prim, Kruskal, Wilson, HuntAndKill,
+            GrowingTree</td></tr>
+          <tr><td><code>Endpoints</code></td><td>Farthest, CenterOut, OutsideIn, Fixed</td></tr>
+          <tr><td><code>Movement</code></td><td>Step, Roll</td></tr>
+          <tr><td><code>ShapeKind</code></td><td>None, Circle, Ring, Heart, Star, Diamond, Cross, Text, Custom</td></tr>
+          <tr><td><code>ShapeSource</code></td><td>Dark, Light, Opaque (which pixels of a picture are inside)</td></tr>
+        </table>
+        <p><span class="k">TopologySpec</span> describes the board: <code>Shape</code>, <code>Width</code>,
+          <code>Height</code>, <code>Rings</code>, <code>FirstRing</code> and <code>Floors</code>. Build one with
+          <code>TopologySpec.Grid(shape, width, height)</code> or <code>TopologySpec.Circle(rings, firstRing = 0)</code>,
+          and <code>Clamp()</code> returns a copy with every field in range.</p>
+      </div>
+
+      <div class="section">
+        <h2 id="data">MazeData</h2>
+        <p>A finished maze: the board, the passages, the players and gimmicks, and the solver's verdict stamped on it.
+          It is serializable, so it stores inside a ScriptableObject, and plain C#, so it works outside Unity too. Cells
+          are numbered as described in <a href="#cells">Cells and slots</a>.</p>
+        <table>
+          <tr><th>Board</th><th></th></tr>
+          <tr><td><code>TopologySpec Grid</code></td><td>The board this maze is carved on.</td></tr>
+          <tr><td><code>string Seed</code></td><td>The seed that made it. With <code>Settings</code> it rebuilds this exact
+            maze.</td></tr>
+          <tr><td><code>CarveAlgorithm Algorithm</code></td><td>How it was carved.</td></tr>
+          <tr><td><code>int[] Masks</code></td><td>Each cell's open sides: bit <i>s</i> set means slot <i>s</i> is
+            open.</td></tr>
+          <tr><td><code>List&lt;int&gt; Holes</code></td><td>Cells removed from the board, including the ones a shape cut
+            away.</td></tr>
+          <tr><td><code>ShapeKind Shape</code>, <code>List&lt;int&gt; Outside</code></td><td>The shape it was cut to and
+            the cells the shape cut away.</td></tr>
+          <tr><td><code>List&lt;MazeRoom&gt; Rooms</code></td><td>The open rooms, each a list of
+            <code>Cells</code>.</td></tr>
+          <tr><td><code>List&lt;Tunnel&gt; Tunnels</code></td><td>Weave crossings: each runs under the corridor cell
+            <code>Over</code>, joining <code>A</code> and <code>C</code> on either side of it.</td></tr>
+        </table>
+        <table>
+          <tr><th>Players</th><th></th></tr>
+          <tr><td><code>List&lt;int&gt; Starts</code>, <code>List&lt;int&gt; Goals</code></td><td>One start per player.
+            One goal per player, or a single goal everyone heads to.</td></tr>
+          <tr><td><code>int Start</code>, <code>int Goal</code></td><td>Player 1's start and goal.</td></tr>
+          <tr><td><code>int PlayerCount</code></td><td>How many players.</td></tr>
+          <tr><td><code>int GoalOf(int player)</code></td><td>The goal that player heads to.</td></tr>
+          <tr><td><code>bool SharedGoal</code></td><td>Every player heads to <code>Goals[0]</code>.</td></tr>
+          <tr><td><code>Movement Movement</code></td><td>How the players move. When Roll can't be used (a board that can't
+            roll, or no start that rolls into the goal), the maze is stored as Step, with a note.</td></tr>
+        </table>
+        <table>
+          <tr><th>Gimmicks</th><th></th></tr>
+          <tr><td><code>List&lt;int&gt; Keys</code></td><td><code>Keys[k]</code> is the cell holding key <i>k</i>. Taking
+            it opens every door of colour <i>k</i> for good.</td></tr>
+          <tr><td><code>List&lt;Door&gt; Doors</code></td><td>Locked sides: <code>Cell</code>, <code>Slot</code> and the
+            <code>Key</code> colour that opens it. A door blocks both ways.</td></tr>
+          <tr><td><code>List&lt;Switch&gt; Switches</code>, <code>List&lt;Gate&gt; Gates</code></td><td>A switch has a
+            <code>Cell</code> and a <code>Channel</code> (0 to 3). A gate has a <code>Cell</code>, a <code>Slot</code>,
+            the <code>Channel</code> that flips it, and <code>StartsOpen</code> for a decoy the switch shuts.</td></tr>
+          <tr><td><code>List&lt;int&gt; Gems</code></td><td>Every gem must be collected before a goal lets a player
+            in.</td></tr>
+          <tr><td><code>List&lt;int&gt; Traps</code></td><td>Trap cells. Stepping or rolling onto one fails.</td></tr>
+          <tr><td><code>List&lt;OneWay&gt; OneWays</code></td><td>A side you can leave <code>Cell</code> through
+            <code>Slot</code>, but never come back.</td></tr>
+          <tr><td><code>List&lt;Portal&gt; Portals</code></td><td>Pairs of cells <code>A</code> and <code>B</code>.
+            Entering either puts you on the other.</td></tr>
+        </table>
+        <table>
+          <tr><th>The verdict</th><th></th></tr>
+          <tr><td><code>bool Solvable</code></td><td>The solver proved every player can reach its goal.</td></tr>
+          <tr><td><code>int Par</code></td><td>The proven minimum: steps, or rolls. With several stepping players it is the
+            total of their routes. -1 means unsolvable or not verified.</td></tr>
+          <tr><td><code>List&lt;int&gt; PlayerPars</code></td><td>Step: each player's own par.</td></tr>
+          <tr><td><code>bool Fair</code></td><td>False only for a race (Step, several players, one goal) whose players'
+            pars differ.</td></tr>
+          <tr><td><code>long OptimalCount</code>, <code>bool CountComplete</code></td><td>How many different best solutions
+            there are. When <code>CountComplete</code> is false the count was cut short and is a lower bound.</td></tr>
+          <tr><td><code>bool Unique</code></td><td>Exactly one best solution, proven.</td></tr>
+          <tr><td><code>bool CanGetStuck</code></td><td>Some reachable position can no longer reach the goal (a
+            soft-lock).</td></tr>
+          <tr><td><code>int Difficulty</code>, <code>int Score</code></td><td>The 1 to 5 star rating (0 when unsolvable)
+            and the raw score it comes from.</td></tr>
+          <tr><td><code>List&lt;int&gt; Solution</code></td><td>Player 1's positions along a best solution, start first.
+            Step lists every cell, Roll lists where the player comes to rest after each roll.</td></tr>
+          <tr><td><code>List&lt;PlayerRoute&gt; Routes</code></td><td>Step with several players: each player's best route
+            as <code>Cells</code>.</td></tr>
+          <tr><td><code>List&lt;int&gt; Moves</code></td><td>Roll: the directions of the best solution.</td></tr>
+        </table>
+        <table>
+          <tr><th>Facts and notes</th><th></th></tr>
+          <tr><td><code>int DeadEnds</code>, <code>int Junctions</code>, <code>int Loops</code></td><td>Cells with one way
+            in or out, cells where three or more ways meet, and independent loops (0 is a perfect maze).</td></tr>
+          <tr><td><code>int SolutionLength</code>, <code>int Decisions</code>, <code>int RealDecisions</code></td><td>Steps
+            on player 1's shortest route through the bare maze, the forks on it, and the forks whose wrong way runs 3 or
+            more cells deep.</td></tr>
+          <tr><td><code>float Coverage</code></td><td>The fraction of the maze the best solution passes through (0 to
+            1).</td></tr>
+          <tr><td><code>int Shortcuts</code></td><td>Doors and first gates a player can walk around.</td></tr>
+          <tr><td><code>MazeSettings Settings</code></td><td>The settings it was made with.</td></tr>
+          <tr><td><code>List&lt;string&gt; Notes</code></td><td>What the generator adjusted or couldn't do.</td></tr>
+        </table>
+        <table>
+          <tr><th>Helpers</th><th></th></tr>
+          <tr><td><code>Topology Topology</code>, <code>int CellCount</code></td><td>The grid, built from
+            <code>Grid</code> on first use.</td></tr>
+          <tr><td><code>bool IsOpen(int cell, int slot)</code></td><td>Is this side open? (Doors and one-way sides are open
+            sides with a rule on them.)</td></tr>
+          <tr><td><code>bool IsHole(int cell)</code></td><td>Is this cell removed from the board?</td></tr>
+          <tr><td><code>Passages ToPassages()</code></td><td>An editable copy of the passages.</td></tr>
+        </table>
+      </div>
+
+      <div class="section">
+        <h2 id="cells">Cells and slots</h2>
+        <p>A cell is an index from 0 to <code>CellCount - 1</code>, and each side of a cell is a slot. Use
+          <code>Topology.Neighbor(cell, slot)</code> to find the cell across a side and <code>SlotTo(cell, other)</code>
+          for the side between two neighbours.</p>
+        <table>
+          <tr><th>Grid</th><th>Cell index</th><th>Slots</th></tr>
+          <tr><td>Square</td><td><code>y * Width + x</code>, row 0 at the bottom</td><td>0 N, 1 E, 2 S, 3 W</td></tr>
+          <tr><td>Hex</td><td><code>y * Width + x</code>, row 0 at the bottom, odd rows shifted half a cell right</td>
+            <td>0 E, 1 NE, 2 NW, 3 W, 4 SW, 5 SE</td></tr>
+          <tr><td>Triangle</td><td><code>y * Width + x</code>, row 0 at the bottom; cell (x, y) points up when x + y is
+            even</td><td>0 left, 1 right, 2 the flat side</td></tr>
+          <tr><td>Circular</td><td>0 is the centre, then each ring counter-clockwise from angle 0</td><td>0
+            counter-clockwise, 1 clockwise, 2 inward, then one outward slot per cell in the next ring (the centre has one
+            slot per first-ring cell)</td></tr>
+          <tr><td>Floors</td><td><code>floor * cells per floor + base cell</code></td><td>The base grid's slots, then Up
+            and Down (the ground floor has no Down slot and the top floor no Up slot)</td></tr>
+        </table>
+        <p>Roll directions use the same numbers as the slots on Square and Hex.</p>
+      </div>
+
+      <div class="section">
+        <h2 id="play">Playing: MazeRules</h2>
+        <p>Your game keeps a <span class="k">MazePlay</span> and asks <span class="k">MazeRules</span> what each move does.
+          These are the same rules the solver counted with, so the game and the par always agree.</p>
+        <table>
+          <tr><th>MazePlay</th><th></th></tr>
+          <tr><td><code>int[] Positions</code></td><td>Each player's cell (-1 once home).</td></tr>
+          <tr><td><code>bool[] Home</code></td><td>Which players are home.</td></tr>
+          <tr><td><code>int[] Keys</code></td><td>Keys held, one bit per colour, per player (on Roll every entry is the
+            same, because keys are shared). Bits 16 to 19 are the switch channels flipped an odd number of times; read a
+            gate with <code>MazeRules.IsGateOpen</code>.</td></tr>
+          <tr><td><code>int[] Gems</code></td><td>Gems collected, one bit per gem, per player.</td></tr>
+          <tr><td><code>MazePlay Clone()</code></td><td>A copy, for undo.</td></tr>
+        </table>
+        <table>
+          <tr><th>MazeRules</th><th>What it does</th></tr>
+          <tr><td><code>MazePlay NewGame(MazeData m)</code></td><td>Every player on its start, nothing held.</td></tr>
+          <tr><td><code>bool TryStep(MazeData m, MazePlay play, int player, int toCell, out string reason)</code></td>
+            <td>Moves one player one cell: a neighbour, the far end of a tunnel, or up or down the stairs. On success the
+            position is updated in place, including portals, pickups, switches and getting home. Otherwise it returns
+            false with the reason, such as a wall, a locked door, a shut gate, a one-way side or a trap. There is also an
+            overload without <code>reason</code>.</td></tr>
+          <tr><td><code>RollResult Roll(MazeData m, MazePlay play, int dir, List&lt;int&gt;[] trails = null)</code></td>
+            <td>Rolls every player in direction <code>dir</code>. <code>play</code> is not changed. The result has
+            <code>After</code> (the new position), <code>Moved</code> (false for a wasted roll) and
+            <code>Trapped</code> (someone rolled onto a trap, so the roll fails). The optional <code>trails</code>, one
+            list per player, receive every cell each player passes, for animation.</td></tr>
+          <tr><td><code>bool Hint(MazeData m, MazePlay play, int player, out int move, int stateBudget = 500_000)</code></td>
+            <td>The first move of a best way on from here. On Step <code>move</code> is the cell to step to, and on Roll
+            the direction. False with -1 when it's solved, that player is home, there is no way on (a soft-lock) or the
+            search ran out of budget.</td></tr>
+          <tr><td><code>bool IsSolved(MazeData m, MazePlay play)</code></td><td>Every player is home.</td></tr>
+          <tr><td><code>bool IsGateOpen(MazePlay play, int player, Gate gate)</code></td><td>Is this gate open for that
+            player now?</td></tr>
+          <tr><td><code>bool CanRoll(GridShape shape)</code>, <code>bool CanRoll(TopologySpec grid)</code></td><td>Roll is
+            defined on Square and Hex, on one floor.</td></tr>
+          <tr><td><code>int DirectionCount(GridShape shape)</code></td><td>Roll directions: 4 on Square, 6 on Hex, 0
+            elsewhere.</td></tr>
+          <tr><td><code>Vec2 Direction(Topology t, int dir)</code></td><td>The way a roll direction points, in board
+            units.</td></tr>
+          <tr><td><code>bool IsLegalStep(MazeData m, int from, int to, out string reason)</code></td><td>Can a player step
+            between two cells of the bare maze, ignoring gimmicks?</td></tr>
+          <tr><td><code>bool Validate(MazeData m, out string error)</code></td><td>Is the data well-formed? Both sides of
+            every opening agree, holes are sealed, every start, goal and gimmick sits on a playable cell, nothing
+            overlaps, every gate has its switch, every tunnel runs straight under a corridor, and the stored route
+            walks.</td></tr>
+          <tr><td><code>const int SwitchShift = 16</code></td><td>Where the switch flips sit in
+            <code>MazePlay.Keys</code>.</td></tr>
+        </table>
+      </div>
+
+      <div class="section">
+        <h2 id="solver">Solving and rating</h2>
+        <table>
+          <tr><th>MazeSolver</th><th>What it does</th></tr>
+          <tr><td><code>MazeVerdict Solve(MazeData m, int stateBudget = 500_000)</code></td><td>Solves the maze as it stands
+            and returns a <code>MazeVerdict</code>: <code>Solvable</code>, <code>Par</code>, <code>PlayerPars</code>,
+            <code>Count</code>, <code>CountComplete</code>, <code>Unique</code>, <code>CanGetStuck</code>,
+            <code>Explored</code>, <code>Path</code>, <code>Routes</code> and <code>Moves</code>.</td></tr>
+          <tr><td><code>MazeVerdict SolveFrom(MazeData m, MazePlay play, int player = 0, int stateBudget = 500_000)</code></td>
+            <td>Solves on from a position in play. <code>Par</code> is the moves still needed. On Step it solves for that
+            player alone, and <code>Moves</code> holds the slot of each step.</td></tr>
+          <tr><td><code>int[] StepParsFromEveryCell(MazeData m, int player = 0, int stateBudget = 500_000)</code></td>
+            <td>On Step, that player's par to its goal from every cell, holding nothing, with all the gimmicks (-1 for a
+            hole or no way home). Null when the budget ran out.</td></tr>
+          <tr><td><code>const long CountCap</code></td><td>The best-solution count stops at 1,000,000,000.</td></tr>
+        </table>
+        <table>
+          <tr><th>Rating and checks</th><th>What it does</th></tr>
+          <tr><td><code>MazeDifficulty.Score(MazeData m)</code>, <code>MazeDifficulty.Stars(MazeData m)</code></td><td>The
+            raw score and the 1 to 5 stars. See <a href="generating.html#stars">How the stars work</a>.</td></tr>
+          <tr><td><code>MazeAudit.Verify(MazeData m, out string before, out string after)</code></td><td>Solves a stored
+            maze again and restamps its verdict. True when anything changed.</td></tr>
+          <tr><td><code>MazeAudit.Reroll(MazeData m)</code></td><td>A fresh maze from the same settings and a new seed, or
+            null for a maze with no settings.</td></tr>
+          <tr><td><code>MazeAudit.MeetsRequest(MazeData m)</code></td><td>Did the maze get everything its settings asked
+            for: solvable, the target stars, the coverage, no soft-lock when asked, and a fair race?</td></tr>
+          <tr><td><code>MazeAudit.Short(MazeData m)</code></td><td>One line, such as "par 63 steps, 3 of 5 stars,
+            unique".</td></tr>
+        </table>
+      </div>
+
+      <div class="section">
+        <h2 id="presets">Presets and Auto</h2>
+        <table>
+          <tr><th>Member</th><th>What it does</th></tr>
+          <tr><td><code>MazePresets.All</code></td><td>Every preset, in menu order. Each <code>MazePreset</code> has a
+            <code>Name</code> (its menu path), a <code>Description</code>, and <code>Make()</code>, which returns a fresh
+            <code>MazeSettings</code>.</td></tr>
+          <tr><td><code>MazePresets.Tune(MazeSettings s, List&lt;string&gt; changes)</code></td><td>What the Auto button
+            does: a copy with settings that fight each other fixed, and a line per change.</td></tr>
+        </table>
+      </div>
+
+      <div class="section">
+        <h2 id="pictures">Pictures</h2>
+        <p><span class="k">MazeExport</span> draws a maze in plain C#, so it works in a build, in the editor or on a
+          server.</p>
+        <table>
+          <tr><th>Member</th><th>What it does</th></tr>
+          <tr><td><code>byte[] Png(MazeData m, ExportOptions options = null)</code></td><td>A PNG file's bytes.</td></tr>
+          <tr><td><code>string Svg(MazeData m, ExportOptions options = null)</code></td><td>An SVG document.</td></tr>
+          <tr><td><code>byte[] Pixels(MazeData m, ExportOptions options, out int width, out int height)</code></td><td>Raw
+            RGBA bytes, top row first.</td></tr>
+          <tr><td><code>Png</code> and <code>Pixels</code> with a <code>MazeSketch</code></td><td>A picture of a given
+            moment, for example part way through the solution.</td></tr>
+          <tr><td><code>int FitSize(MazeData m, MazeSketch sketch, ExportOptions options, int maxWidth, int maxHeight)</code></td>
+            <td>The <code>Size</code> that fits a box.</td></tr>
+        </table>
+        <table>
+          <tr><th>ExportOptions</th><th>Default</th><th>What it does</th></tr>
+          <tr><td><code>Style</code></td><td>Printable</td><td>Printable (black on white with the start and goal),
+            AnswerKey (with the solution drawn in), or AsShown (colour, every gimmick, the solution and a
+            legend).</td></tr>
+          <tr><td><code>Size</code></td><td>2048</td><td>The maze's longer side in pixels (64 to 8192).</td></tr>
+          <tr><td><code>WallWidth</code></td><td>0.12</td><td>Wall thickness as a fraction of a cell (0.02 to
+            0.4).</td></tr>
+          <tr><td><code>Margin</code></td><td>0.8</td><td>The white border, in cells (0 to 4).</td></tr>
+          <tr><td><code>Legend</code></td><td>true</td><td>AsShown: draw the legend under the maze.</td></tr>
+          <tr><td><code>Floor</code></td><td>-1</td><td>Stacked boards: -1 draws every floor side by side, and 0 or more
+            just that floor.</td></tr>
+        </table>
+        <p><span class="k">MazeSketch</span> is the drawing model behind the pictures. <code>MazeSketch.Build(maze, play,
+          focus, trails)</code> sketches a position, <code>MazeSketch.Frames(maze)</code> steps through the stored solution
+          move by move, and <code>MazeSketch.Describe(maze, cell, play)</code> says what is in a cell in plain words.</p>
+      </div>
+
+      <div class="section">
+        <h2 id="shapes">Shapes</h2>
+        <p>A <span class="k">ShapeMask</span> is a black and white bitmap (<code>Width</code>, <code>Height</code>,
+          <code>Pixels</code>, row 0 at the top). Set it on <code>MazeSettings.ShapeMask</code> with
+          <code>Shape = ShapeKind.Custom</code>.</p>
+        <table>
+          <tr><th>Method</th><th>What it does</th></tr>
+          <tr><td><code>ShapeMask.FromRows(params string[] rows)</code></td><td>From rows of text: <code>#</code> (or any
+            character other than a space or <code>.</code>) is inside.</td></tr>
+          <tr><td><code>ShapeMask.FromText(string text)</code></td><td>Text in the built-in 5 by 7 font.</td></tr>
+          <tr><td><code>ShapeMask.FromPixels(byte[] rgba, int width, int height, bool bottomRowFirst, ShapeSource source, float threshold = 0.5f, int maxSide = 128)</code></td>
+            <td>From a picture's RGBA bytes. Pass <code>bottomRowFirst</code> true for Unity's
+            <code>GetPixels32</code>. The result is cropped to the shape and shrunk to at most <code>maxSide</code>
+            across, and is null when nothing counts as inside.</td></tr>
+        </table>
+      </div>
+
+      <div class="section">
+        <h2 id="topology">Topology</h2>
+        <p>A <span class="k">Topology</span> is a grid as a graph of cells and slots. Get one from
+          <code>MazeData.Topology</code> or <code>Topology.Create(spec)</code>.</p>
+        <table>
+          <tr><th>Member</th><th>What it does</th></tr>
+          <tr><td><code>int CellCount</code>, <code>int SlotCount(int cell)</code></td><td>How many cells, and how many
+            sides a cell has.</td></tr>
+          <tr><td><code>int Neighbor(int cell, int slot)</code></td><td>The cell across a side, or -1 at the
+            border.</td></tr>
+          <tr><td><code>int OppositeSlot(int cell, int slot)</code>, <code>int SlotTo(int cell, int other)</code></td><td>The
+            neighbour's side that faces back, and the side between two cells (-1 when they don't touch).</td></tr>
+          <tr><td><code>Vec2 Center(int cell)</code></td><td>A cell's centre in board units (x right, y up).</td></tr>
+          <tr><td><code>Edge EdgeOf(int cell, int slot)</code></td><td>The wall on that side: a segment from
+            <code>A</code> to <code>B</code>, or an arc when <code>Arc</code> is true.</td></tr>
+          <tr><td><code>int CellAt(Vec2 p)</code></td><td>The cell under a point, or -1.</td></tr>
+          <tr><td><code>void Bounds(out Vec2 min, out Vec2 max)</code></td><td>The board's bounds, for framing.</td></tr>
+          <tr><td><code>(int x, int y) Coord(int cell)</code></td><td>Column and row, or index in ring and ring on a
+            circular board.</td></tr>
+        </table>
+        <p>A board with floors is a <span class="k">LayeredTopology</span>, which adds <code>Base</code>,
+          <code>Floors</code>, <code>FloorOf(cell)</code>, <code>BaseCell(cell)</code>, <code>At(floor, baseCell)</code>,
+          <code>UpSlot(cell)</code>, <code>DownSlot(cell)</code> and <code>IsStairSlot(cell, slot)</code>.</p>
+      </div>
+
+      <div class="section">
+        <h2 id="assets">ScriptableObjects</h2>
+        <table>
+          <tr><th>Type</th><th>What it holds</th></tr>
+          <tr><td><code>MazePuzzleAsset</code></td><td>One maze: <code>Maze</code> and <code>Label</code>, plus
+            shortcuts to its verdict (<code>Shape</code>, <code>Floors</code>, <code>Movement</code>,
+            <code>PlayerCount</code>, <code>Solvable</code>, <code>IsUnique</code>, <code>OptimalCount</code>,
+            <code>Par</code>, <code>Difficulty</code>, <code>Seed</code>) and <code>Set(data, label)</code>.</td></tr>
+          <tr><td><code>MazePuzzlePack</code></td><td>An ordered list of mazes: <code>PackName</code>,
+            <code>Mazes</code>, <code>Count</code>, <code>Get(index)</code> (null when out of range),
+            <code>Set</code>, <code>Add</code>, <code>Replace(index, data)</code> and <code>Clear()</code>.</td></tr>
+          <tr><td><code>PuzzleAssets</code></td><td><code>CreatePuzzle(data, label)</code> and
+            <code>CreatePack(mazes, packName)</code> make new instances in memory, which you can save with
+            <code>AssetDatabase.CreateAsset</code> in the editor or use at runtime.</td></tr>
+          <tr><td><code>IPuzzleProvider</code></td><td>Both asset types implement it: <code>AppendTo(List&lt;MazeData&gt;
+            levels)</code> adds their mazes in order, so one list in the inspector can take either.</td></tr>
+        </table>
+        <p>Both are created by the Maze Generator's Save menu, not by an empty right-click Create.</p>
+      </div>
+
+      <div class="section">
+        <h2 id="demo">Demo components</h2>
+        <p>These are in <span class="k">SimpleMaze.Demo</span>. The <a href="demos.html">Demos</a> page explains how
+          they fit together.</p>
+        <table>
+          <tr><th>Type</th><th>What it does</th></tr>
+          <tr><td><code>MazeDemo</code></td><td>The one component the demo scene needs. It builds the view, game, HUD,
+            hub, sounds and effects in code and runs the flow. Fields: <code>Camera</code>, <code>Pitch</code>,
+            <code>HdrpLook</code>, <code>UiThroughCamera</code> and a level pack per mode. Methods include
+            <code>Setup()</code>, <code>PlayEndless(mode, grid, stars)</code>, <code>PlayLevel(mode, index)</code>,
+            <code>Generate(mode, settings)</code>, <code>Begin(maze)</code>, <code>NextGame()</code> and
+            <code>BackToHub()</code>.</td></tr>
+          <tr><td><code>MazeGame</code></td><td>Plays a maze on a <code>MazeView3D</code>: input, movement, every gimmick's
+            animation, moves against par, undo, restart, hints, auto-solve, players and races, stairs and the camera.
+            Start a game with <code>Begin(maze)</code>, drive it with <code>Push(Vector2 screen)</code> or the keyboard,
+            and listen to <code>Won</code>, <code>Cue</code>, <code>Moment</code> and <code>Message</code>.</td></tr>
+          <tr><td><code>MazeView3D</code></td><td>Builds a maze in 3D from primitives and meshes, on any grid, with no
+            prefabs: <code>Build(maze)</code>, <code>CellPosition</code>, <code>StandPosition</code>,
+            <code>FocusFloor</code>, <code>FrameCamera</code>, and lists of the objects it made (keys, doors, gates,
+            players and so on).</td></tr>
+          <tr><td><code>MazeHud</code></td><td>The in-game HUD and win panel, in uGUI with the built-in font.</td></tr>
+          <tr><td><code>MazeHub</code></td><td>The front screen: the welcome panel, the mode cards, and each mode's Endless
+            and Level Pack setup.</td></tr>
+          <tr><td><code>MazeMode</code>, <code>MazeModes</code></td><td>The five demo modes, their names, colours, sample
+            mazes and the Endless recipe for each mode, grid and star count.</td></tr>
+          <tr><td><code>MazeProgress</code></td><td>Each pack level's best moves, kept in PlayerPrefs:
+            <code>Best</code>, <code>Record</code>, <code>Clear</code> and <code>NameOf</code>.</td></tr>
+          <tr><td><code>MazeBeeper</code></td><td>Sounds made in code for every <code>MazeCue</code>, with no audio
+            files.</td></tr>
+          <tr><td><code>MazeEffects</code></td><td>Small effects (sparkles, dust, confetti) from a pool of primitives, for
+            every <code>MazeMoment</code>.</td></tr>
+          <tr><td><code>DemoLook</code>, <code>DemoHdrp</code></td><td>The demo's colours and materials for the active
+            render pipeline, and the HDRP volume that gives it the same look.</td></tr>
+        </table>
+      </div>
+
+      <div class="section">
+        <h2 id="blocks">Building blocks</h2>
+        <p>The pieces the generator is made of are public too, for anyone who wants to build their own pipeline. Most
+          projects never need them.</p>
+        <table>
+          <tr><th>Type</th><th>What it does</th></tr>
+          <tr><td><code>MazeBuilder</code></td><td><code>Build(settings, seed)</code> makes one maze from clamped settings
+            and an exact seed, which is what every <code>MazeGenerator</code> method calls.</td></tr>
+          <tr><td><code>Passages</code></td><td>The open sides of every cell over a topology, plus holes, with
+            <code>Open</code>, <code>Close</code>, <code>IsOpen</code>, <code>Degree</code> and
+            <code>OnRim</code>.</td></tr>
+          <tr><td><code>Carver</code></td><td>Carves a perfect maze through every playable cell with a
+            <code>CarveAlgorithm</code>.</td></tr>
+          <tr><td><code>HolePlacer</code>, <code>BoardShape</code>, <code>Weave</code>, <code>GimmickPlacer</code></td><td>Holes,
+            shapes, crossings and gimmicks.</td></tr>
+          <tr><td><code>GraphSearch</code></td><td>Breadth-first search, shortest paths and connectivity over
+            passages.</td></tr>
+          <tr><td><code>Rng</code></td><td>The small deterministic random generator, seeded from a string.</td></tr>
+        </table>
+      </div>
+
+    </main>
+  </div>
+
+  <div class="footer">
+    <p>Simple Maze by Living Failure. <a href="about.html">About and support</a></p>
+  </div>
+
+</div>
+</body>
+</html>

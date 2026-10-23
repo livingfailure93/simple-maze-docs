@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simple Maze - About</title>
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+<div class="page-wrap">
+
+  <div class="format-selector" id="top">
+    <span class="format-label">View:</span>
+    <a href="index.html" class="format-link">Multi-Page</a>
+    <a href="single-page.html" class="format-link">Single Page</a>
+  </div>
+
+  <nav class="navbar"><ul>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="quick-start.html">Quick Start</a></li>
+    <li><a href="generating.html">Generating</a></li>
+    <li><a href="api-reference.html">API Reference</a></li>
+    <li><a href="demos.html">Demos</a></li>
+    <li><a href="troubleshooting.html">Troubleshooting</a></li>
+    <li><a href="about.html" class="active">About</a></li>
+  </ul></nav>
+
+  <div class="hero">
+    <h1>About</h1>
+    <p class="tagline">What this is, who made it, and how to get help.</p>
+  </div>
+
+  <div class="page-layout">
+    <aside class="toc">
+      <h3>On this page</h3>
+      <ul>
+        <li><a href="#about">About Simple Maze</a></li>
+        <li><a href="#inside">What's in the package</a></li>
+        <li><a href="#design">Design principles</a></li>
+        <li><a href="#more">More from Living Failure</a></li>
+        <li><a href="#support">Support</a></li>
+        <li><a href="#license">License</a></li>
+      </ul>
+    </aside>
+    <main class="content">
+
+      <div class="section">
+        <h2 id="about">About Simple Maze</h2>
+        <p>Simple Maze is a maze generator for Unity, made by <strong>Living Failure</strong>. It builds mazes on square,
+          hex, triangle and circular grids, with keys and doors, switches and gates, gems, traps, one-way sides, portals,
+          rolling players and up to 8 floors. Then it solves each maze exactly, stamps it with its proven par and a 1 to 5
+          star rating, and stores it as a ScriptableObject or exports it as a picture. A complete 3D demo, built entirely
+          in code, is included.</p>
+        <p class="muted">Version 1.0, made and tested with Unity 6000.6.</p>
+      </div>
+
+      <div class="section">
+        <h2 id="inside">What's in the package</h2>
+        <table>
+          <tr><th>Folder</th><th>What it holds</th></tr>
+          <tr><td><code>Runtime</code></td><td>The core (generation, the maze data, the play rules, the solver, pictures and
+            the ScriptableObjects) and, in <code>Runtime/Demo</code>, the 3D demo.</td></tr>
+          <tr><td><code>Editor</code></td><td>The Maze Generator window, the inspectors and the documentation
+            menu.</td></tr>
+          <tr><td><code>Scenes</code></td><td>The demo scene.</td></tr>
+          <tr><td><code>Generated</code></td><td>The demo's five level packs.</td></tr>
+          <tr><td><code>Documentation</code></td><td>These pages, which open offline from <strong>Window &gt; Living
+            Failure &gt; Simple Maze &gt; Documentation</strong>.</td></tr>
+        </table>
+      </div>
+
+      <div class="section">
+        <h2 id="design">Design principles</h2>
+        <ul>
+          <li><strong>Solve exactly.</strong> The par and the number of best solutions come from searching every position
+            the players can reach, not from an estimate.</li>
+          <li><strong>Prove the gimmicks together.</strong> Keys, gates, gems, portals and the rest are solved with the
+            maze, so a door that looks necessary really is.</li>
+          <li><strong>Be fair.</strong> Race starts are picked so every player's par is the same, gimmicks
+            included.</li>
+          <li><strong>Be honest.</strong> When a request can't be met, the maze's notes say so. Nothing is quietly
+            downgraded, and the store page claims nothing the solver can't back up.</li>
+          <li><strong>One set of rules.</strong> The generator, the solver and the play rules your game uses all move
+            players the same way, so your game and the par always agree.</li>
+          <li><strong>No bloat.</strong> The core has no package dependencies, and the demo and the editor tools live in
+            their own assemblies. The demo needs no prefabs, models, textures or audio files.</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h2 id="more">More from Living Failure</h2>
+        <p><strong>Simple Klotski:</strong> sliding-block puzzles in five modes (Gridlock, Klotski, Clear, Clear 3D and
+          Clear Snakes), each board solved exactly and stamped with its proven par.</p>
+        <p><strong>Simple States:</strong> switch-and-state logic puzzles in four modes: Classic combinations, Ordered
+          chains with traps, Lights Out with paintable pattern goals, and the three-state Trilight grid.</p>
+        <p><strong>Simple Connect:</strong> a connection-puzzle toolkit where you draw the pairs (square and hex), rotate
+          the pipes, or rotate a whole network back together.</p>
+        <p><strong>Simple Hamiltonian:</strong> a cover-all, single-path puzzle generator (square and hex), where the
+          solution is one unbroken line that visits every tile once.</p>
+        <p class="muted">All on the Unity Asset Store.</p>
+      </div>
+
+      <div class="section">
+        <h2 id="support">Support</h2>
+        <p>Questions, bugs and ideas are welcome at
+          <a href="mailto:livingfailuregames@gmail.com">livingfailuregames@gmail.com</a>. Please include your Unity version
+          and, for anything about a particular maze, its seed and settings, since a seed rebuilds the maze exactly.
+          Corrections to these pages are welcome too.</p>
+      </div>
+
+      <div class="section">
+        <h2 id="license">License</h2>
+        <p>Distributed under the Unity Asset Store End User License Agreement. Use it in your games and tools, but don't
+          resell or redistribute the source as an asset.</p>
+      </div>
+
+    </main>
+  </div>
+
+  <div class="footer">
+    <p>Simple Maze by Living Failure. <a href="about.html">About and support</a></p>
+  </div>
+
+</div>
+</body>
+</html>

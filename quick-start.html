@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simple Maze - Quick Start</title>
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+<div class="page-wrap">
+
+  <div class="format-selector" id="top">
+    <span class="format-label">View:</span>
+    <a href="index.html" class="format-link">Multi-Page</a>
+    <a href="single-page.html" class="format-link">Single Page</a>
+  </div>
+
+  <nav class="navbar"><ul>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="quick-start.html" class="active">Quick Start</a></li>
+    <li><a href="generating.html">Generating</a></li>
+    <li><a href="api-reference.html">API Reference</a></li>
+    <li><a href="demos.html">Demos</a></li>
+    <li><a href="troubleshooting.html">Troubleshooting</a></li>
+    <li><a href="about.html">About</a></li>
+  </ul></nav>
+
+  <div class="hero">
+    <h1>Quick Start</h1>
+    <p class="tagline">From import to a maze you can play, in about five minutes.</p>
+  </div>
+
+  <div class="page-layout">
+    <aside class="toc">
+      <h3>On this page</h3>
+      <ul>
+        <li><a href="#install">1. Install</a></li>
+        <li><a href="#generate">2. Generate a maze</a></li>
+        <li><a href="#read">3. Read the analysis</a></li>
+        <li><a href="#save">4. Save it</a></li>
+        <li><a href="#play">5. Play the demo</a></li>
+        <li><a href="#own">6. Use it in your game</a></li>
+        <li><a href="#next">Where to next</a></li>
+      </ul>
+    </aside>
+    <main class="content">
+
+      <div class="section">
+        <h2 id="install">1. Install</h2>
+        <p>Import the package. Everything lives under <span class="k">Assets/SimpleMaze/</span>, and nothing is
+          added to your scenes until you ask for it.</p>
+        <p>The core (the generator, the solver, the play rules and the maze data) has no package dependencies. The
+          demo uses the <strong>Input System</strong> and <strong>Unity UI</strong> packages. It reads the keyboard
+          through the Input System, so set <strong>Project Settings &gt; Player &gt; Active Input Handling</strong>
+          to <em>Input System Package</em> or <em>Both</em> before you play it.</p>
+        <div class="callout info"><p><strong>Render pipelines:</strong> URP is recommended, HDRP is supported and
+          the Built-in pipeline still works. The demo builds its materials from the active pipeline's default
+          shader, and on HDRP it adds a small volume so it looks the same as on the others (turn off
+          <span class="k">HdrpLook</span> on the <span class="k">MazeDemo</span> component to use your own
+          lighting instead). Simple Maze was built and tested with Unity 6000.6.</p></div>
+      </div>
+
+      <div class="section">
+        <h2 id="generate">2. Generate a maze</h2>
+        <p>Open <strong>Window &gt; Living Failure &gt; Simple Maze &gt; Maze Generator</strong>. You can also
+          get there from <strong>Assets &gt; Create &gt; Simple Maze &gt; Maze Generator</strong>.</p>
+        <div class="step"><div class="step-number">1</div><div class="step-content">
+          <h4>Take a preset</h4><p>Press <strong>Presets</strong> and pick <em>Classic/Circular 10 rings</em>.
+          A preset replaces every setting with a ready-made recipe.</p></div></div>
+        <div class="step"><div class="step-number">2</div><div class="step-content">
+          <h4>Generate</h4><p>Press <strong>Generate</strong>. Mazes are built on a background thread, so the
+          window stays responsive, and a long batch shows a progress bar with a Cancel button. Raise
+          <strong>Batch count</strong> to make up to 20 at a time.</p></div></div>
+        <div class="step"><div class="step-number">3</div><div class="step-content">
+          <h4>Try a few more</h4><p><em>Gimmicks/Keys and doors</em> locks the way with doors whose keys hide
+          before them. <em>Roll/Ice board (square)</em> makes the player slide until a wall stops it.
+          <em>Big/Tower of 3 floors</em> stacks three floors joined by stairs, and <em>Shapes/Word: MAZE</em>
+          carves the maze into the letters of a word.</p></div></div>
+        <div class="callout tip"><p>If you change settings by hand and they fight each other (Roll on a triangle
+          grid, say), press <strong>Auto</strong>. It fixes them and tells you what it changed.</p></div>
+      </div>
+
+      <div class="section">
+        <h2 id="read">3. Read the analysis</h2>
+        <p>The pane on the right shows the selected maze. From the top:</p>
+        <ul>
+          <li><strong>The verdict:</strong> the par in steps or rolls, whether the best solution is unique or how
+            many there are, and the difficulty out of 5. A warning shows when a player can get stuck.</li>
+          <li><strong>Board:</strong> a picture of the maze with a legend, tabs for each floor, and a zoom.
+            Hover a cell to see what is in it.</li>
+          <li><strong>Best solution:</strong> a slider that steps through the solution, with the players moving,
+            keys and gems disappearing as they're taken and gates flipping. Below it is the move list and a
+            <strong>Copy solution</strong> button.</li>
+          <li><strong>Facts</strong> and <strong>Generation report:</strong> the numbers (dead ends, loops,
+            decisions, coverage and more) and every note the generator left.</li>
+          <li><strong>Export:</strong> save the maze as a PNG or SVG, as a printable sheet, an answer key or
+            the colour view.</li>
+        </ul>
+        <div class="callout tip"><p>Dragging the solution slider is the quickest way to judge a maze. You can see
+          at a glance whether the route wanders the whole board or runs straight to the goal.</p></div>
+      </div>
+
+      <div class="section">
+        <h2 id="save">4. Save it</h2>
+        <p>Press <strong>Save</strong> and choose:</p>
+        <ul>
+          <li><strong>Current</strong> saves the selected maze as a <span class="k">MazePuzzleAsset</span>.</li>
+          <li><strong>Pack (all)</strong> saves every maze in the set as one ordered
+            <span class="k">MazePuzzlePack</span>.</li>
+          <li><strong>Pack (unique only)</strong> saves just the mazes with exactly one best solution.</li>
+        </ul>
+        <p>Both asset types have inspectors with the same analysis pane, plus <strong>Verify</strong>, which
+          solves the maze again and refreshes its stored verdict, and <strong>Re-roll</strong>, which makes a new
+          maze from the same settings with a fresh seed. A pack also has <strong>Export all</strong>, which writes
+          every maze as a printable picture and its answer key into a folder you pick.</p>
+      </div>
+
+      <div class="section">
+        <h2 id="play">5. Play the demo</h2>
+        <p>Open <span class="k">Assets/SimpleMaze/Scenes/SimpleMazeDemo.unity</span> and press Play. The demo opens
+          on a welcome screen. Press <strong>Let's play</strong>, pick a mode, then choose
+          <strong>Endless</strong> for a new maze to your order or <strong>Level Pack</strong> for the ready-made
+          levels.</p>
+        <p>The controls are also listed at the bottom of the screen while you play:</p>
+        <ul>
+          <li><strong>Arrows or WASD</strong> move or roll, and <strong>Q, E, Z and C</strong> take the diagonal
+            sides on hex, triangle and circular mazes.</li>
+          <li><strong>Space or Enter</strong> takes the stairs (or <strong>Page Up</strong> and
+            <strong>Page Down</strong>).</li>
+          <li><strong>U</strong> (or Backspace, or Ctrl+Z) undoes a move, <strong>R</strong> restarts and
+            <strong>H</strong> shows a hint.</li>
+          <li><strong>F</strong> lets the solver play the rest of the maze from where you are, and F or R stops
+            it.</li>
+          <li><strong>Tab</strong> or <strong>1 to 4</strong> switches player when several players each have a
+            goal of their own.</li>
+          <li><strong>[ and ]</strong> or a right-drag turn the view, <strong>Home and End</strong> tilt it, the
+            mouse wheel or <strong>+ and -</strong> zoom, and <strong>V</strong> resets it.</li>
+          <li><strong>M</strong> mutes the sound and <strong>Esc</strong> goes back to the menu.</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h2 id="own">6. Use it in your game</h2>
+        <p>Make a maze in code, check what the solver found, and read the rest straight off the
+          <span class="k">MazeData</span>:</p>
+<pre><code>using SimpleMaze;
+
+var settings = new MazeSettings
+{
+    Grid = TopologySpec.Circle(10),
+    Endpoints = Endpoints.OutsideIn,   // start on the rim, goal in the centre
+    Keys = 2,
+    TargetDifficulty = 3,              // keep trying until it rates 3 stars
+};
+MazeData maze = MazeGenerator.GenerateVerified(settings);
+Debug.Log($"Par {maze.Par} steps, {maze.Difficulty} stars, solvable: {maze.Solvable}");</code></pre>
+        <p>To run your own game on it, keep a <span class="k">MazePlay</span> and ask
+          <span class="k">MazeRules</span> what each move does. These are the same rules the solver used, so your
+          game always agrees with the par:</p>
+<pre><code>MazePlay play = MazeRules.NewGame(maze);
+int here = play.Positions[0];
+int next = maze.Topology.Neighbor(here, 0);       // the cell through side 0
+
+if (MazeRules.TryStep(maze, play, 0, next, out string reason))
+{
+    if (MazeRules.IsSolved(maze, play)) Debug.Log("Solved!");
+}
+else Debug.Log(reason);                            // why it can't go: a wall, a locked door...</code></pre>
+        <p>Or let the demo's 3D view draw and play it for you. <span class="k">MazeGame</span> adds a
+          <span class="k">MazeView3D</span> to the same object and builds the whole maze from primitives:</p>
+<pre><code>using SimpleMaze.Demo;
+
+var game = new GameObject("Maze").AddComponent&lt;MazeGame&gt;();
+game.Begin(maze);
+game.View.FrameCamera(Camera.main, -1);           // -1 frames every floor</code></pre>
+        <p>A saved maze works the same way: give your script a <span class="k">MazePuzzleAsset</span> field and
+          use its <span class="k">Maze</span>, or a <span class="k">MazePuzzlePack</span> and its
+          <span class="k">Get(index)</span>. See the <a href="api-reference.html">API Reference</a> for the rest.</p>
+      </div>
+
+      <div class="section">
+        <h2 id="next">Where to next</h2>
+        <ul>
+          <li><a href="generating.html">Generating</a> explains every setting and what it does.</li>
+          <li><a href="demos.html">Demos</a> shows how the demo scene is put together and how to change it.</li>
+          <li><a href="troubleshooting.html">Troubleshooting</a> covers notes, fallbacks and limits.</li>
+        </ul>
+      </div>
+
+    </main>
+  </div>
+
+  <div class="footer">
+    <p>Simple Maze by Living Failure. <a href="about.html">About and support</a></p>
+  </div>
+
+</div>
+</body>
+</html>

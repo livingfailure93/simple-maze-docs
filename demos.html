@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simple Maze - Demos</title>
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+<div class="page-wrap">
+
+  <div class="format-selector" id="top">
+    <span class="format-label">View:</span>
+    <a href="index.html" class="format-link">Multi-Page</a>
+    <a href="single-page.html" class="format-link">Single Page</a>
+  </div>
+
+  <nav class="navbar"><ul>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="quick-start.html">Quick Start</a></li>
+    <li><a href="generating.html">Generating</a></li>
+    <li><a href="api-reference.html">API Reference</a></li>
+    <li><a href="demos.html" class="active">Demos</a></li>
+    <li><a href="troubleshooting.html">Troubleshooting</a></li>
+    <li><a href="about.html">About</a></li>
+  </ul></nav>
+
+  <div class="hero">
+    <h1>Demos</h1>
+    <p class="tagline">What the 3D demo does, how it is put together, and how to use its pieces in your own game.</p>
+  </div>
+
+  <div class="page-layout">
+    <aside class="toc">
+      <h3>On this page</h3>
+      <ul>
+        <li><a href="#scene">The demo scene</a></li>
+        <li><a href="#component">One component: MazeDemo</a></li>
+        <li><a href="#flow">The flow</a></li>
+        <li><a href="#modes">The five modes</a></li>
+        <li><a href="#packs">The level packs</a></li>
+        <li><a href="#playing">Playing</a></li>
+        <li><a href="#sound">Sounds and effects</a></li>
+        <li><a href="#pipelines">Render pipelines</a></li>
+        <li><a href="#own">Using the pieces yourself</a></li>
+      </ul>
+    </aside>
+    <main class="content">
+
+      <div class="section">
+        <h2 id="scene">The demo scene</h2>
+        <p>Open <span class="k">Assets/SimpleMaze/Scenes/SimpleMazeDemo.unity</span> and press Play. The scene holds a
+          camera, a sun, and one object called <strong>Simple Maze Demo</strong> with the <span class="k">MazeDemo</span>
+          component and the five level packs assigned. Everything else, from the maze to the menus, is built in code when
+          the scene starts, so there are no prefabs, models, textures or audio files to look after.</p>
+        <div class="callout info"><p>The demo reads the keyboard through the Input System package. If nothing happens
+          when you press keys, set <strong>Project Settings &gt; Player &gt; Active Input Handling</strong> to
+          <em>Input System Package</em> or <em>Both</em>.</p></div>
+      </div>
+
+      <div class="section">
+        <h2 id="component">One component: MazeDemo</h2>
+        <p>Add <span class="k">MazeDemo</span> to any object in a scene with a camera and press Play. When it starts, it
+          builds:</p>
+        <ul>
+          <li>a <strong>Maze</strong> child with <span class="k">MazeView3D</span>, which draws the maze, and
+            <span class="k">MazeGame</span>, which plays it;</li>
+          <li>the <strong>HUD</strong> (<span class="k">MazeHud</span>) and the <strong>hub</strong>
+            (<span class="k">MazeHub</span>), both in uGUI with Unity's built-in font;</li>
+          <li><span class="k">MazeBeeper</span> for the sounds and <span class="k">MazeEffects</span> for the
+            effects.</li>
+        </ul>
+        <p>It also sets the camera up for the maze, giving it a plain background colour and a 40 degree field of view,
+          and adds a sun if the scene has no light.</p>
+        <table>
+          <tr><th>Field</th><th>What it does</th></tr>
+          <tr><td><code>Camera</code></td><td>The camera that shows the maze. Empty uses the main camera, and if there is
+            none, one is made.</td></tr>
+          <tr><td><code>UiThroughCamera</code></td><td>Draw the HUD and the hub through the camera instead of over the
+            screen, so the camera's own picture includes them.</td></tr>
+          <tr><td><code>Pitch</code></td><td>How steeply the camera looks down at the maze, in degrees (58 by
+            default).</td></tr>
+          <tr><td><code>HdrpLook</code></td><td>HDRP only: give the demo the same look as on the other pipelines. Turn it
+            off to use your own volumes and lights.</td></tr>
+          <tr><td><code>ClassicPack</code>, <code>GimmicksPack</code>, <code>RollPack</code>, <code>TowerPack</code>,
+            <code>RacePack</code></td><td>The level pack for each mode. Any can be empty, and that mode's Level Pack tab
+            then says so. <code>GimmicksPack</code> is the Dungeon mode's pack.</td></tr>
+        </table>
+      </div>
+
+      <div class="section">
+        <h2 id="flow">The flow</h2>
+        <div class="step"><div class="step-number">1</div><div class="step-content">
+          <h4>Welcome</h4><p>The first screen says what Simple Maze is and where to make your own mazes, with the
+          publisher's contact at the bottom. <strong>Let's play</strong> goes on, and <strong>About</strong> on the mode
+          screen brings it back.</p></div></div>
+        <div class="step"><div class="step-number">2</div><div class="step-content">
+          <h4>Pick a mode</h4><p>Five cards, each with a picture of a small maze of that mode drawn without its
+          solution.</p></div></div>
+        <div class="step"><div class="step-number">3</div><div class="step-content">
+          <h4>Endless or Level Pack</h4><p><strong>Endless</strong> lets you pick a grid and a difficulty from 1 to 5
+          stars, then builds a new maze to that order on a background thread. <strong>Level Pack</strong> shows the
+          mode's levels as numbered buttons: grey still to do, the mode's colour solved, and gold solved on par.
+          <strong>Play</strong> starts the first level you haven't solved. The demo remembers your choices for each mode
+          while it runs.</p></div></div>
+        <div class="step"><div class="step-number">4</div><div class="step-content">
+          <h4>Play</h4><p>The HUD shows the maze, its stars, your moves against par, and whose turn it is. A button bar
+          has Undo, Restart, Hint, Solve, Stairs (when you stand on stairs) and Menu.</p></div></div>
+        <div class="step"><div class="step-number">5</div><div class="step-content">
+          <h4>Win</h4><p>After a short celebration a panel shows your moves, the par and a rating, with
+          <strong>Replay</strong>, <strong>Menu</strong> and <strong>Next</strong> (or press Enter). In Endless, Next
+          builds a new maze to the same order, and in a pack it goes to the next level, then back to the pack after the
+          last one. <strong>Menu</strong> or <strong>Esc</strong> returns to the mode cards at any time.</p></div></div>
+      </div>
+
+      <div class="section">
+        <h2 id="modes">The five modes</h2>
+        <table>
+          <tr><th>Mode</th><th>Grids</th><th>Endless mazes</th></tr>
+          <tr><td>Classic</td><td>all four</td><td>Plain mazes. The board grows with the stars.</td></tr>
+          <tr><td>Dungeon (<code>MazeMode.Gimmicks</code> in code)</td><td>all four</td><td>Keys and doors from 1 star,
+            gems from 2, a switch and traps from 3, a portal pair and one-way sides from 4, and a second switch at 5.</td></tr>
+          <tr><td>Roll</td><td>Square and Hex</td><td>The player rolls until something stops it. Braid is set so rolling
+            has loops to use.</td></tr>
+          <tr><td>Tower</td><td>all four</td><td>2 floors joined by stairs, or 3 floors from 3 stars, from the rim to the
+            centre.</td></tr>
+          <tr><td>Race</td><td>all four</td><td>Two players take turns heading for one goal from fair starts, and the
+            first one home wins.</td></tr>
+        </table>
+        <p>On a circular board, Endless mazes run from the rim to the centre. The recipes are in
+          <span class="k">MazeModes.Endless</span>, and each one goes through <span class="k">MazePresets.Tune</span> and
+          verified generation, so the maze you get rates the stars you picked whenever the board can reach them.</p>
+      </div>
+
+      <div class="section">
+        <h2 id="packs">The level packs</h2>
+        <p>The demo ships with <strong>50 levels</strong> in five packs in <span class="k">Assets/SimpleMaze/Generated</span>.
+          Each was made by the generator from a fixed seed, and each was played through to par to check it. They are
+          ordinary <span class="k">MazePuzzlePack</span> assets, so you can open them in the inspector, read their
+          analysis, or export them as printable pictures.</p>
+        <table>
+          <tr><th>Pack</th><th>Levels</th><th>What's in it</th></tr>
+          <tr><td>Classic</td><td>12</td><td>Every grid, from a 6 by 6 square up to an 18 by 18 square, including a hex
+            star and a circular heart. Rated 1 to 5 stars.</td></tr>
+          <tr><td>Dungeon</td><td>12</td><td>One new idea per level for the first seven (a key, gems, a switch, a portal,
+            one-way sides, traps and weave crossings), then mixes of them, ending with a 14 by 14 maze that has keys,
+            gems, traps, a switch, a portal and one-way sides.</td></tr>
+          <tr><td>Roll</td><td>10</td><td>Square and hex boards from 6 by 6 to 10 by 10, the last one with gems and a
+            portal.</td></tr>
+          <tr><td>Tower</td><td>8</td><td>2 to 4 floors on every grid, some with a key or gems.</td></tr>
+          <tr><td>Race</td><td>8</td><td>2 to 4 players on every grid, each race with equal routes for everyone.</td></tr>
+        </table>
+        <p><strong>Your own packs:</strong> make mazes in the Maze Generator, choose <strong>Save &gt; Pack (all)</strong>,
+          and drag the pack into a slot on the <span class="k">MazeDemo</span> component.</p>
+        <p><strong>Progress:</strong> each level's best number of moves is saved in PlayerPrefs under
+          <code>SimpleMaze.Demo.Best.&lt;pack name&gt;.&lt;level&gt;</code>, so it stays on that device. Races are not
+          recorded, and neither is a level the auto-solver helped with. The win panel says "Level complete!", "New best"
+          or "Your best is" accordingly.</p>
+      </div>
+
+      <div class="section">
+        <h2 id="playing">Playing</h2>
+        <p>The keys are listed at the bottom of the screen while you play, and in the
+          <a href="quick-start.html#play">Quick Start</a>. A few details:</p>
+        <ul>
+          <li><strong>Moving:</strong> a key moves you toward the side whose direction on screen is closest to it, so
+            the controls feel right from any camera angle and on any grid. Holding a key keeps walking, and a key
+            pressed during a move is kept for the next one.</li>
+          <li><strong>Moves</strong> count steps, or rolls that moved someone. Bumping a wall, a roll that goes nowhere
+            and a roll onto a trap don't count.</li>
+          <li><strong>Undo</strong> takes back one move at a time and <strong>Restart</strong> puts the whole maze back
+            to the start.</li>
+          <li><strong>Hint</strong> lays a gold arrow toward the next move of a best way on, worked out from where you
+            are.</li>
+          <li><strong>Solve</strong> (or F) lets the solver play the rest from where you are. Press it again, or F or R,
+            to stop.</li>
+          <li><strong>Several players:</strong> in a race the turn passes after every step, and the board shows the maze
+            as the player whose turn it is sees it (their keys, doors and gates). When each player has its own goal,
+            Tab or 1 to 4 switches player. On Roll every roll moves everyone.</li>
+          <li><strong>The view:</strong> the camera frames the board in the space the HUD leaves free. You can turn it,
+            tilt it and zoom, and when zoomed in it follows the player. On a maze with floors it follows the player's
+            floor and hides the floors above.</li>
+          <li><strong>The rating</strong> on the win panel is 3 pips on par, 2 a little over (up to 2 moves, or a quarter
+            of the par on bigger mazes) and 1 beyond that. Races show who won instead.</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h2 id="sound">Sounds and effects</h2>
+        <p><span class="k">MazeBeeper</span> makes every sound in code when the demo starts: steps (three variants, so
+          walking doesn't sound robotic), a bump, a roll, the stairs, a key, a gem, the goal opening, a door, a switch
+          with its gates, a portal, spikes, a "no way" buzz, a hint, undo and restart, the win, and a button blip.
+          <strong>M</strong> mutes it.</p>
+        <p><span class="k">MazeEffects</span> adds small effects made of a pool of tiny shapes: sparkles for a key or a
+          gem in its colour, a gold ring when the goal opens, dust at a bump, a purple swirl at both ends of a portal,
+          sparks off spikes, and confetti for the win. Nothing is created or destroyed while you play, and because the
+          effects use the demo's ordinary materials, they look the same in every render pipeline.</p>
+      </div>
+
+      <div class="section">
+        <h2 id="pipelines">Render pipelines</h2>
+        <p>The demo works in <strong>URP</strong> (recommended), <strong>HDRP</strong> and the <strong>Built-in</strong>
+          pipeline without any changes. Its materials use the active pipeline's default lit shader.</p>
+        <p>HDRP lights in physical units, sets the exposure on its own and takes its ambient light from a sky, so the
+          demo would come out dark and tinted. With <span class="k">HdrpLook</span> on, <span class="k">DemoHdrp</span>
+          adds a global volume with a fixed exposure, no tone mapping or bloom, and a gradient sky in the demo's colours,
+          clears the camera to the demo's background colour, and sets the sun in lux. That code only compiles when the
+          HDRP package is installed.</p>
+      </div>
+
+      <div class="section">
+        <h2 id="own">Using the pieces yourself</h2>
+        <p>The demo components work on their own too. The smallest setup is one <span class="k">MazeGame</span>, which
+          adds its <span class="k">MazeView3D</span> automatically:</p>
+<pre><code>using SimpleMaze;
+using SimpleMaze.Demo;
+
+var game = new GameObject("Maze").AddComponent&lt;MazeGame&gt;();
+game.Begin(maze);                                   // build it and start a game
+game.View.FrameCamera(Camera.main, -1);             // -1 frames every floor
+game.Won += g =&gt; Debug.Log($"Solved in {g.Moves}, par {g.Par}");</code></pre>
+        <ul>
+          <li><strong>Input:</strong> <span class="k">MazeGame</span> reads the keyboard itself. For touch or a gamepad,
+            call <code>Push(Vector2 screen)</code> with the direction on screen, and <code>Undo()</code>,
+            <code>Restart()</code>, <code>ShowHint()</code>, <code>StartAutoSolve()</code> and
+            <code>TakeStairs(way)</code> for the rest.</li>
+          <li><strong>The camera</strong> is yours unless you turn on <code>CameraControls</code>. Only
+            <code>FollowFloor</code> moves it, on mazes with floors.</li>
+          <li><strong>Events:</strong> <code>Won</code> fires once when the game is won, <code>Cue</code> for every moment
+            worth a sound, <code>Moment</code> for the same moments with a position and colour for effects, and
+            <code>Message</code> for short notes such as "No stairs here".</li>
+          <li><strong>A HUD:</strong> add a <span class="k">MazeHud</span> and set its <code>Game</code>, or read
+            <code>Moves</code>, <code>Par</code>, <code>Solved</code> and <code>Player</code> into your own UI.</li>
+          <li><strong>The look:</strong> the colours, materials and shapes are in <span class="k">DemoLook.cs</span>, and
+            the timing is on <span class="k">MazeGame</span> (<code>StepTime</code>, <code>RollTime</code>,
+            <code>PortalTime</code>, <code>Hop</code> and <code>SolvePause</code>).</li>
+          <li><strong>Without the 3D view:</strong> keep a <span class="k">MazePlay</span> and use
+            <span class="k">MazeRules</span> directly, as in the <a href="quick-start.html#own">Quick Start</a>.</li>
+        </ul>
+      </div>
+
+    </main>
+  </div>
+
+  <div class="footer">
+    <p>Simple Maze by Living Failure. <a href="about.html">About and support</a></p>
+  </div>
+
+</div>
+</body>
+</html>

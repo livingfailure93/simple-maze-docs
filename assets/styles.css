@@ -1,0 +1,116 @@
+/* =============================================================================
+   SIMPLE MAZE - Documentation Theme
+   Light, high-contrast. Single blue accent (#2563eb). Dark code blocks only.
+   ============================================================================= */
+
+:root{
+  --bg:#f7f8fb; --panel:#ffffff; --ink:#1b212e; --muted:#5a6472; --line:#e7eaf0;
+  --accent:#2563eb; --accent-dark:#1d4ed8; --accent-soft:#eaf0ff;
+  --code-bg:#1a2030; --code-ink:#e8edf6;
+  --tip:#10b981; --warn:#e0a13a;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  line-height:1.65; color:var(--ink); background:var(--bg); -webkit-font-smoothing:antialiased}
+
+.page-wrap{max-width:1140px; margin:0 auto; padding:30px 22px 60px}
+
+/* --- format selector --- */
+.format-selector{text-align:right; margin-bottom:12px; font-size:13px; color:var(--muted)}
+.format-label{margin-right:8px}
+.format-link{color:var(--ink); text-decoration:none; padding:4px 11px; border-radius:7px; font-weight:600}
+.format-link:hover{background:#e9edf5}
+.format-link.active{background:var(--accent); color:#fff}
+
+/* --- navbar (light card, accent active) --- */
+.navbar{background:var(--panel); border:1px solid var(--line); border-radius:13px; margin-bottom:26px; padding:8px 10px}
+.navbar ul{list-style:none; display:flex; flex-wrap:wrap; gap:3px}
+.navbar a{color:var(--ink); text-decoration:none; padding:8px 14px; border-radius:9px; font-size:14px; font-weight:600; display:block}
+.navbar a:hover{background:#eef1f7}
+.navbar a.active{background:var(--accent); color:#fff}
+
+/* --- hero (light) --- */
+.hero{background:var(--panel); border:1px solid var(--line); border-top:4px solid var(--accent);
+  border-radius:18px; padding:46px 40px; margin-bottom:24px; text-align:center}
+.hero h1{font-size:2.6em; font-weight:800; letter-spacing:-.02em; color:var(--ink); border:none}
+.hero .tagline{color:var(--ink); font-size:1.18em; margin-top:10px; font-weight:500}
+.hero .sub-tagline{color:var(--muted); font-size:.96em; margin-top:12px; max-width:740px; margin:12px auto 0}
+.hero .pill{display:inline-block; margin-top:18px; background:var(--accent-soft); color:var(--accent-dark);
+  border:1px solid #cfdcff; font-weight:700; font-size:12.5px; padding:5px 13px; border-radius:999px}
+
+/* --- layout: content + sticky TOC --- */
+.page-layout{display:flex; gap:30px; align-items:flex-start}
+.content{flex:1; min-width:0}
+.toc{position:sticky; top:20px; width:228px; flex-shrink:0; background:var(--panel);
+  border:1px solid var(--line); border-radius:14px; padding:20px}
+.toc h3{font-size:11.5px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin-bottom:12px}
+.toc ul{list-style:none}
+.toc li{margin-bottom:5px}
+.toc a{color:var(--ink); text-decoration:none; font-size:13.5px; font-weight:500; padding:5px 9px; border-radius:7px; display:block}
+.toc a:hover{background:var(--accent-soft); color:var(--accent-dark)}
+
+/* --- section cards --- */
+.section{background:var(--panel); border:1px solid var(--line); border-radius:16px;
+  padding:28px 30px; margin:0 0 22px}
+
+/* --- headings / text --- */
+h1,h2{font-weight:800; letter-spacing:-.01em; color:var(--ink); margin-top:0}
+h2{font-size:1.45em; padding-bottom:10px; border-bottom:2px solid var(--line); margin-bottom:16px}
+h2 .accent{color:var(--accent-dark)}
+h3{font-size:1.12em; font-weight:700; margin:24px 0 9px; color:var(--ink)}
+h4{font-size:1em; font-weight:700; margin:18px 0 7px; color:var(--ink)}
+p{margin-bottom:13px; color:var(--ink)}
+a{color:var(--accent-dark); font-weight:600; text-decoration:none}
+a:hover{text-decoration:underline}
+.muted{color:var(--muted)}
+ul,ol{margin:10px 0 14px 24px}
+li{margin-bottom:6px}
+strong{font-weight:700}
+hr{border:none; border-top:1px solid var(--line); margin:30px 0}
+
+/* --- feature / step cards --- */
+.feature-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px; margin-top:16px}
+.feature-card{background:#fafbfe; border:1px solid var(--line); border-radius:13px; padding:20px}
+.feature-card h4{margin-top:0; color:var(--accent-dark)}
+.feature-card p{color:#39424f; font-size:.93em; margin-bottom:0}
+
+.step{display:flex; gap:15px; margin:18px 0; align-items:flex-start}
+.step-number{flex-shrink:0; width:34px; height:34px; background:var(--accent); color:#fff;
+  border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:.92em}
+.step-content h4{margin-top:3px}
+
+/* --- code --- */
+code{font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace; font-size:.88em;
+  background:#eef1f7; padding:2px 7px; border-radius:5px; color:#15407c}
+pre{background:var(--code-bg); color:var(--code-ink); padding:18px 22px; border-radius:12px;
+  overflow-x:auto; margin:16px 0; border-left:4px solid var(--accent); line-height:1.6}
+pre code{background:none; padding:0; color:inherit; font-size:.86em}
+.k{color:#7fb0ff} .c{color:#8995ad} .s{color:#f0c674}
+
+/* --- tables --- */
+table{width:100%; border-collapse:collapse; margin:16px 0; font-size:.92em}
+th{text-align:left; padding:10px 13px; background:#f1f4fa; font-weight:700; font-size:.82em;
+  text-transform:uppercase; letter-spacing:.04em; color:var(--muted); border-bottom:2px solid var(--line)}
+td{padding:10px 13px; border-bottom:1px solid var(--line); vertical-align:top; color:var(--ink)}
+tr:last-child td{border-bottom:none}
+td code{white-space:nowrap}
+
+/* --- callouts --- */
+.callout{padding:16px 20px; border-radius:12px; margin:16px 0; font-size:.94em; background:#f3f6fc}
+.callout.info{border-left:4px solid var(--accent)}
+.callout.tip{border-left:4px solid var(--tip); background:#eefaf4}
+.callout.warning{border-left:4px solid var(--warn); background:#fdf7ea}
+
+/* --- keys --- */
+kbd{background:#fff; border:1px solid #cbd3e0; border-bottom-width:2px; border-radius:6px; padding:1px 7px; font-size:13px; font-family:inherit; color:var(--ink)}
+
+/* --- footer --- */
+.footer{text-align:center; padding:28px 0 6px; color:var(--muted); font-size:.86em}
+.footer a{color:var(--accent-dark); font-weight:600}
+
+@media(max-width:860px){
+  .page-layout{flex-direction:column}
+  .toc{position:static; width:100%; margin-bottom:22px}
+  .feature-grid{grid-template-columns:1fr}
+  .hero h1{font-size:2em}
+}

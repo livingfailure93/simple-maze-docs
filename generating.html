@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simple Maze - Generating</title>
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+<div class="page-wrap">
+
+  <div class="format-selector" id="top">
+    <span class="format-label">View:</span>
+    <a href="index.html" class="format-link">Multi-Page</a>
+    <a href="single-page.html" class="format-link">Single Page</a>
+  </div>
+
+  <nav class="navbar"><ul>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="quick-start.html">Quick Start</a></li>
+    <li><a href="generating.html" class="active">Generating</a></li>
+    <li><a href="api-reference.html">API Reference</a></li>
+    <li><a href="demos.html">Demos</a></li>
+    <li><a href="troubleshooting.html">Troubleshooting</a></li>
+    <li><a href="about.html">About</a></li>
+  </ul></nav>
+
+  <div class="hero">
+    <h1>Generating</h1>
+    <p class="tagline">Every setting, what it changes, and how the generator keeps its promises.</p>
+  </div>
+
+  <div class="page-layout">
+    <aside class="toc">
+      <h3>On this page</h3>
+      <ul>
+        <li><a href="#window">The Maze Generator window</a></li>
+        <li><a href="#board">Board</a></li>
+        <li><a href="#carving">Carving</a></li>
+        <li><a href="#shape">Shape</a></li>
+        <li><a href="#players">Players and movement</a></li>
+        <li><a href="#rules">How players move</a></li>
+        <li><a href="#gimmicks">Gimmicks</a></li>
+        <li><a href="#quality">Quality</a></li>
+        <li><a href="#stars">How the stars work</a></li>
+        <li><a href="#auto">Auto and presets</a></li>
+        <li><a href="#seeds">Seeds, batches and saving</a></li>
+        <li><a href="#honesty">Limits and notes</a></li>
+        <li><a href="#code">Generating from code</a></li>
+      </ul>
+    </aside>
+    <main class="content">
+
+      <div class="section">
+        <h2 id="window">The Maze Generator window</h2>
+        <p>Open <strong>Window &gt; Living Failure &gt; Simple Maze &gt; Maze Generator</strong>. The settings are on
+          the left in six sections (Board, Carving, Shape, Players and movement, Gimmicks and Quality), and the mazes
+          you've made are on the right with the analysis pane. Fields only appear when they apply, so Rings shows for
+          a circular board and Width and Height for the others.</p>
+        <p>Every maze the window makes goes through <strong>verified generation</strong>: if a maze misses what you
+          asked for, the generator tries the next seed, and if none of its tries succeed it gives you the closest one
+          with a note saying why. Generation runs on a background thread with a progress bar and a
+          <strong>Cancel</strong> button, and your settings and the unsaved mazes survive a recompile.</p>
+        <p>Each table below gives the label in the window, the matching field on
+          <span class="k">MazeSettings</span> for code, and the range it accepts. Values outside the range are
+          clamped, so code can pass anything.</p>
+      </div>
+
+      <div class="section">
+        <h2 id="board">Board</h2>
+        <table>
+          <tr><th>Setting</th><th>Field</th><th>Range</th><th>What it does</th></tr>
+          <tr><td>Grid</td><td><code>Grid.Shape</code></td><td>Square, Hex, Triangle, Circular</td><td>The cell
+            shape. Square cells have 4 sides, Hex 6 (pointy-top), Triangle 3 (alternating up and down), and Circular is
+            a centre cell inside rings.</td></tr>
+          <tr><td>Width, Height</td><td><code>Grid.Width</code>, <code>Grid.Height</code></td><td>2 to 64</td><td>Cells
+            across and rows (on Triangle, Width counts triangles per row).</td></tr>
+          <tr><td>Rings</td><td><code>Grid.Rings</code></td><td>2 to 40</td><td>Circular only: the rings around the
+            centre cell, which is the board's radius. Rings split into more cells as they grow, so cells stay roughly
+            square from the centre to the rim.</td></tr>
+          <tr><td>First ring cells</td><td><code>Grid.FirstRing</code></td><td>0, or 3 to 12</td><td>Circular only:
+            the cells in the first ring. 0 means automatic, which is 6.</td></tr>
+          <tr><td>Floors</td><td><code>Grid.Floors</code></td><td>1 to 8</td><td>Stack the board into floors joined
+            by stairs. Every floor has the same outline and holes, and each is carved as its own maze.</td></tr>
+          <tr><td>Stairs per floor</td><td><code>Stairs</code></td><td>1 to 4</td><td>Stairs between each pair of
+            floors. The first goes where that floor's maze is farthest from the stairs you arrived by, so every floor
+            gets crossed, and each extra one adds a loop.</td></tr>
+        </table>
+        <p>In code, <span class="k">TopologySpec.Grid(shape, width, height)</span> and
+          <span class="k">TopologySpec.Circle(rings)</span> build the board, and you set <span class="k">Floors</span>
+          on the result.</p>
+      </div>
+
+      <div class="section">
+        <h2 id="carving">Carving</h2>
+        <table>
+          <tr><th>Setting</th><th>Field</th><th>Range</th><th>What it does</th></tr>
+          <tr><td>Algorithm</td><td><code>Algorithm</code></td><td>6 choices</td><td>How the maze is carved. Each one
+            has its own look: Recursive Backtracker makes long winding corridors, Prim short and bushy ones, Kruskal an
+            even, patchy maze, Wilson a perfectly uniform one, Hunt and Kill long corridors with fewer dead ends, and
+            Growing Tree anything in between.</td></tr>
+          <tr><td>Branchiness</td><td><code>Branchiness</code></td><td>0 to 1</td><td>Growing Tree only: 0 gives long
+            winding corridors and 1 short, bushy ones.</td></tr>
+          <tr><td>Braid</td><td><code>Braid</code></td><td>0 to 1</td><td>Dead-end removal. 0 is a perfect maze, with
+            exactly one route between any two cells, and 1 leaves no dead ends at all. Rolling mazes need some braid,
+            because rolling needs loops.</td></tr>
+          <tr><td>Extra loops</td><td><code>Loops</code></td><td>0 to 200 in the window, up to 999 in code</td><td>Random
+            openings, each adding a second way round.</td></tr>
+          <tr><td>Rooms</td><td><code>Rooms</code></td><td>0 to 12</td><td>Open rooms carved into the maze, spread
+            out.</td></tr>
+          <tr><td>Room size</td><td><code>RoomSize</code></td><td>1 to 4</td><td>How far each room reaches from its
+            centre, in cells.</td></tr>
+          <tr><td>Holes</td><td><code>Holes</code></td><td>0 to 0.35</td><td>The fraction of cells removed as holes.
+            The board always stays in one piece.</td></tr>
+          <tr><td>Weave crossings</td><td><code>Weave</code></td><td>0 to 40</td><td>Square boards only: places where a
+            passage tunnels under a corridor, like the bridges in a printed weave maze. The maze keeps its routes and
+            just gains crossings.</td></tr>
+        </table>
+      </div>
+
+      <div class="section">
+        <h2 id="shape">Shape</h2>
+        <table>
+          <tr><th>Setting</th><th>Field</th><th>Range</th><th>What it does</th></tr>
+          <tr><td>Shape</td><td><code>Shape</code></td><td>None, Circle, Ring, Heart, Star, Diamond, Cross, Text,
+            Custom</td><td>Cuts the board to an outline. It works on every grid.</td></tr>
+          <tr><td>Text</td><td><code>ShapeText</code></td><td>A to Z, 0 to 9, space, <code>- ! ? . +</code> and
+            <code>&lt;3</code> for a heart</td><td>Shape Text: the word, in the built-in 5 by 7 font. Give it a wide
+            board, about 6 cells across per letter and at least 9 rows.</td></tr>
+          <tr><td>Image, or Mask rows</td><td><code>ShapeMask</code></td><td>any picture, or rows of
+            <code>#</code> and <code>.</code></td><td>Shape Custom: drop in any picture and choose whether its
+            <strong>Dark</strong>, <strong>Light</strong> or <strong>Opaque</strong> areas are inside the maze, where
+            the line falls, and how much <strong>Detail</strong> to keep (24 to 160 mask pixels across). The picture
+            needs no import settings. Leave the image empty to type the shape as rows instead, top row first.</td></tr>
+          <tr><td>Fill</td><td><code>ShapeFill</code></td><td>0.3 to 1</td><td>How much of the board the shape
+            fills.</td></tr>
+          <tr><td>Connect pieces</td><td><code>ConnectPieces</code></td><td>on or off</td><td>When the shape falls
+            apart into pieces, like the letters of a word, join them with the shortest bridges. Off keeps only the
+            largest piece.</td></tr>
+        </table>
+      </div>
+
+      <div class="section">
+        <h2 id="players">Players and movement</h2>
+        <table>
+          <tr><th>Setting</th><th>Field</th><th>Range</th><th>What it does</th></tr>
+          <tr><td>Movement</td><td><code>Movement</code></td><td>Step, Roll</td><td>Step moves one cell at a time on
+            every grid. Roll slides in a straight line until something stops it, on one-floor Square and Hex boards
+            only. Anywhere else a Roll maze uses Step, with a note.</td></tr>
+          <tr><td>Start / goal</td><td><code>Endpoints</code></td><td>Farthest, Center Out, Outside In,
+            Fixed</td><td>Farthest puts them at the two cells farthest apart along the maze. Center Out starts in the
+            middle with the goal on the rim, and Outside In is the other way round. Fixed uses the two cells you
+            give.</td></tr>
+          <tr><td>Start cell, Goal cell</td><td><code>Start</code>, <code>Goal</code></td><td>cell indices</td><td>Fixed
+            only. If they aren't two different playable cells, the farthest pair is used instead, with a note.</td></tr>
+          <tr><td>Open border</td><td><code>OpenBorder</code></td><td>on or off</td><td>Cuts an entrance and an exit in
+            the outer wall where the start and goal touch it, for printed mazes. With Farthest, both are then picked on
+            the border.</td></tr>
+          <tr><td>Players</td><td><code>Players</code></td><td>1 to 4</td><td>How many players are on the
+            board.</td></tr>
+          <tr><td>Shared goal</td><td><code>SharedGoal</code></td><td>on or off</td><td>With several players: on gives
+            everyone one goal (the centre, or the Fixed goal) from fair starts, which makes it a race. Off gives each
+            player a goal of its own.</td></tr>
+        </table>
+        <div class="callout info"><p><strong>Fair races.</strong> On Step, a race's starts are picked so that every
+          player's par is exactly the same. With gimmicks, each player has to fetch its own keys and gems, so the
+          other players' starts are chosen after the gimmicks are placed, using each cell's real par. When a board has
+          no fair starts, a "Players:" note says so, <span class="k">MazeData.Fair</span> is false, and verified
+          generation tries the next seed.</p></div>
+      </div>
+
+      <div class="section">
+        <h2 id="rules">How players move</h2>
+        <p>The solver, the generator and the play rules your game uses all follow the same rules, so a move your game
+          allows is exactly a move the solver counted.</p>
+        <p><strong>Step.</strong> A player moves one cell through an open side. A door needs its key, a shut gate
+          blocks, a one-way side only lets you out its own way, a tunnel side leads under the corridor to the cell
+          beyond, and stairs lead up or down a floor. A trap is never a legal step. Stepping into a portal puts you on
+          its twin. Keys and gems are picked up where you land, and landing on a switch flips every gate of its
+          colour. You are home when you land on your goal holding every gem. With several players, each one moves on
+          its own and keeps its own keys, gems and switch flips, and players can pass through each other.</p>
+        <p><strong>Roll.</strong> Every player rolls the chosen way at once, front-most first, until a wall, a locked
+          door, a shut gate, a one-way side, the border or another player stops it. Tunnels are rolled straight
+          through. Rolling onto a trap fails the whole roll, so nothing changes. A player picks up whatever it rolls
+          over, and the players share keys and gems, which makes several rolling players a cooperative puzzle. A
+          player is home the moment it rolls over its goal holding every gem, a portal throws it out of its twin
+          still rolling, and a player that comes to rest on a switch flips its gates once the roll is over.</p>
+      </div>
+
+      <div class="section">
+        <h2 id="gimmicks">Gimmicks</h2>
+        <p>Gimmicks are placed one type at a time in a fixed order (portals, keys and doors, switches and gates, gems,
+          one-way sides, then traps), and the maze is solved again after each type. A type that can't be made to work
+          is dropped on its own, with a note, and never drags the others down.</p>
+        <table>
+          <tr><th>Setting</th><th>Field</th><th>Range</th><th>What it does</th></tr>
+          <tr><td>Keys and doors</td><td><code>Keys</code></td><td>0 to 6</td><td>Each door locks a side on the way to
+            the goal, and its key waits somewhere you can reach before that door, off the way and as far from it as
+            possible.</td></tr>
+          <tr><td>Switches</td><td><code>Switches</code></td><td>0 to 4</td><td>Each switch has its own colour, and
+            landing on it flips every gate of that colour between open and shut. Its first gate is shut across the
+            way, and the switch waits before it.</td></tr>
+          <tr><td>Gates per switch</td><td><code>GatesPerSwitch</code></td><td>1 to 3</td><td>The extra gates are
+            decoys off the way. Some start open, and the switch shuts them.</td></tr>
+          <tr><td>Shortcut doors</td><td><code>ShortcutDoors</code></td><td>on or off</td><td>Off (the default) puts
+            every door and every switch's first gate truly in the way, so its key or switch is always needed. A maze
+            with lots of loops may then get fewer doors, with a note. On lets doors and gates go where a player could
+            walk around them, so the key opens a shortcut instead of the only way.</td></tr>
+          <tr><td>Gems</td><td><code>Gems</code></td><td>0 to 8</td><td>Every gem must be collected before a goal lets
+            a player in. They go in dead ends first, spread out.</td></tr>
+          <tr><td>Traps</td><td><code>Traps</code></td><td>0 to 0.25</td><td>The fraction of free cells off the way
+            that become traps. They sit beside the way as decoys, never on the way to anything you need.</td></tr>
+          <tr><td>One-way sides</td><td><code>OneWays</code></td><td>0 to 24</td><td>About half go along the way, so
+            there's no going back, and the rest are decoys.</td></tr>
+          <tr><td>Portal pairs</td><td><code>Portals</code></td><td>0 to 4</td><td>Pairs the best solution actually
+            uses, so each one shortens the way, with the two ends far apart.</td></tr>
+          <tr><td>No soft-locks</td><td><code>NoSoftLocks</code></td><td>on or off</td><td>Only accept mazes where no
+            player can ever reach a position it can't finish from. It's off by default, because rolling mazes very
+            often have such positions (like ice puzzles, give players a reset). Every maze reports it in
+            <span class="k">CanGetStuck</span> either way. On Roll boards it works best with Braid near 1.</td></tr>
+        </table>
+        <div class="callout tip"><p>When fewer doors, gates or portals fit than you ask for, you get fewer, with a note.
+          As a rule of thumb, about one key or switch fits per 40 cells, and <strong>Auto</strong> lowers the count to
+          that for you.</p></div>
+      </div>
+
+      <div class="section">
+        <h2 id="quality">Quality</h2>
+        <table>
+          <tr><th>Setting</th><th>Field</th><th>Range</th><th>What it does</th></tr>
+          <tr><td>Target difficulty</td><td><code>TargetDifficulty</code></td><td>0 to 5</td><td>Keep trying mazes
+            until one rates exactly this many stars. 0 accepts any rating. A miss returns the closest maze and says so
+            in its notes.</td></tr>
+          <tr><td>Min coverage</td><td><code>MinCoverage</code></td><td>0 to 0.9</td><td>The best solution must pass
+            through at least this much of the maze. Gimmicks are also placed to make the player roam as much as they
+            can.</td></tr>
+          <tr><td>Max attempts</td><td><code>MaxAttempts</code></td><td>1 to 500</td><td>Under Advanced: how many mazes
+            to try for each result before falling back to the closest one.</td></tr>
+          <tr><td>State budget</td><td><code>StateBudget</code></td><td>1,000 to 5,000,000</td><td>Under Advanced: how
+            many positions the solver may explore before it reports the maze as not verified. Several rolling players
+            need more.</td></tr>
+        </table>
+      </div>
+
+      <div class="section">
+        <h2 id="stars">How the stars work</h2>
+        <p>The rating comes from a score. On <strong>Step</strong> the score is the longest player's par, plus 5 for
+          every real decision on the way (a fork whose wrong way runs 3 or more cells deep, so you can't see the dead
+          end at a glance), plus 6 per key, 2 per gem or portal pair and 1 per one-way side. On
+          <strong>Roll</strong> it is the par in rolls, plus 2 per key and 1 per gem.</p>
+        <table>
+          <tr><th>Stars</th><th>Step score</th><th>Roll score</th></tr>
+          <tr><td>1</td><td>up to 50</td><td>up to 3</td></tr>
+          <tr><td>2</td><td>51 to 85</td><td>4 to 7</td></tr>
+          <tr><td>3</td><td>86 to 126</td><td>8 to 11</td></tr>
+          <tr><td>4</td><td>127 to 179</td><td>12 to 22</td></tr>
+          <tr><td>5</td><td>above 179</td><td>above 22</td></tr>
+        </table>
+        <p>The bands were measured on a sweep of everyday mazes (576 Step and 288 Roll boards, on every grid, sizes 6
+          to 24, all six algorithms, with and without braid and holes), so each star covers about a fifth of them. A
+          maze that isn't proven solvable gets 0 stars. Bigger boards usually rate higher, so to hit a target, pick a
+          board size that can reach it.</p>
+      </div>
+
+      <div class="section">
+        <h2 id="auto">Auto and presets</h2>
+        <p><strong>Auto</strong> fixes settings that fight each other and tells you what it changed. In code it is
+          <span class="k">MazePresets.Tune</span>. It:</p>
+        <ul>
+          <li>switches Roll to Step on a grid that can't roll (Triangle, Circular or stacked floors);</li>
+          <li>raises Braid to 0.6 on a Roll maze below 0.5, or to 0.9 when No soft-locks is on;</li>
+          <li>turns Weave off on a board that isn't Square;</li>
+          <li>lowers keys and switches to about one per 40 cells;</li>
+          <li>raises the State budget to 2,000,000 for several rolling players;</li>
+          <li>raises Max attempts to 150 for 4 or 5 star targets, coverage targets or No soft-locks.</li>
+        </ul>
+        <p><strong>Presets</strong> replace every setting with a ready-made recipe. In code they are
+          <span class="k">MazePresets.All</span>, and each one's <span class="k">Make()</span> gives a fresh
+          <span class="k">MazeSettings</span>.</p>
+        <table>
+          <tr><th>Preset</th><th>What you get</th></tr>
+          <tr><td>Classic/Square 15×15</td><td>A plain perfect maze.</td></tr>
+          <tr><td>Classic/Circular 10 rings</td><td>The polar maze: start on the rim, finish in the centre.</td></tr>
+          <tr><td>Classic/Hex 13×13</td><td>Honeycomb cells, six ways out of each.</td></tr>
+          <tr><td>Classic/Triangle 21×10</td><td>Alternating triangles, three sides each.</td></tr>
+          <tr><td>Classic/Printable 30×30</td><td>Big, with an entrance and an exit cut in the outer wall.</td></tr>
+          <tr><td>Shapes/Heart (circular)</td><td>A circular board cut to a heart.</td></tr>
+          <tr><td>Shapes/Star (hex)</td><td>A hex board cut to a star.</td></tr>
+          <tr><td>Shapes/Word: MAZE</td><td>The board is the word, and its letters are joined by bridges.</td></tr>
+          <tr><td>Shapes/Ring with rooms</td><td>A circular ring with open rooms to cross.</td></tr>
+          <tr><td>Gimmicks/Keys and doors</td><td>Three locked doors on the way, each with its key hidden before it, and
+            gems to collect.</td></tr>
+          <tr><td>Gimmicks/Switches and gates</td><td>Shut gates on the way, opened by switches, and decoy gates the
+            switches shut.</td></tr>
+          <tr><td>Gimmicks/Traps and one-ways (hex)</td><td>Traps beside the way, and one-way sides you can't go back
+            through.</td></tr>
+          <tr><td>Gimmicks/Portal hop (circular)</td><td>Portal pairs and gems on a circular board. It asks for 3 pairs,
+            and often fewer fit on this board, which its note tells you.</td></tr>
+          <tr><td>Roll/Ice board (square)</td><td>Roll until a wall stops you, rated 3 stars.</td></tr>
+          <tr><td>Roll/Co-op pair (hex)</td><td>Two players roll together, each to its own goal.</td></tr>
+          <tr><td>Players/Race of 4 (hex)</td><td>Four players and one goal in the middle, with exactly equal
+            routes.</td></tr>
+          <tr><td>Players/Duel (circular)</td><td>Two players race to the centre.</td></tr>
+          <tr><td>Big/Weave 20×20</td><td>Corridors crossing over and under each other.</td></tr>
+          <tr><td>Big/Tower of 3 floors</td><td>Three floors joined by stairs, with the goal on the top floor and a key
+            and a switch on the way.</td></tr>
+        </table>
+      </div>
+
+      <div class="section">
+        <h2 id="seeds">Seeds, batches and saving</h2>
+        <p>The same settings and the same seed always give the same maze. In the window, <strong>Random</strong> uses a
+          fresh seed for every Generate and shows the one it used. Turn Random off to type a seed and keep it. Each
+          maze gets its own seed, the batch's seed followed by a dash and the maze's number in the set
+          (<code>-0</code>, <code>-1</code> and so on), and every maze stores its own seed, which the analysis pane can
+          copy.</p>
+        <p>Verified generation tries the seed itself first, then the same seed with <code>#1</code>, <code>#2</code> and
+          so on added, until a maze meets the request. A maze's stored seed is the one that worked, such as
+          <code>level-7-0#15</code>, so it always reproduces that exact maze.</p>
+        <p><strong>Batch count</strong> makes 1 to 20 mazes per click and adds them to the set.
+          <strong>Clear on generate</strong> empties the set first, so each click replaces the batch.
+          <strong>Save</strong> then writes <em>Current</em> as a <span class="k">MazePuzzleAsset</span>, or
+          <em>Pack (all)</em> or <em>Pack (unique only)</em> as a <span class="k">MazePuzzlePack</span>, using the
+          name in <strong>Save name</strong> as the suggestion.</p>
+      </div>
+
+      <div class="section">
+        <h2 id="honesty">Limits and notes</h2>
+        <p>The generator never quietly gives you less than you asked for. Whenever it adjusts something, the maze's
+          <span class="k">Notes</span> say what happened, and the Generation report in the analysis pane lists them.
+          Each note starts with the setting it is about, for example "Rooms:", "Players:" or "Target difficulty:".
+          Common ones:</p>
+        <ul>
+          <li><strong>Not enough room:</strong> rooms, loops, crossings, players, portal pairs or doors that wouldn't
+            fit on the board.</li>
+          <li><strong>A gimmick dropped:</strong> no layout with it could be solved (without a soft-lock, if you asked
+            for that) in 8 tries, so it was left out.</li>
+          <li><strong>A setting that doesn't apply:</strong> Roll on a board that can't roll, or Weave off Square.</li>
+          <li><strong>A shape that's too small</strong> for the board, so the whole board was used.</li>
+          <li><strong>A missed target:</strong> no maze in the attempts rated the stars you asked for, and you got the
+            closest.</li>
+          <li><strong>Not verified:</strong> the solver's state budget ran out before every player got home.</li>
+        </ul>
+        <p>Use <span class="k">MazeAudit.MeetsRequest(maze)</span> to check whether a maze got everything its settings
+          asked for. A pack's inspector can re-roll every maze in the pack that didn't (<strong>Re-roll &gt; Fallbacks</strong>).</p>
+      </div>
+
+      <div class="section">
+        <h2 id="code">Generating from code</h2>
+        <p>Everything the window does is available from code through <span class="k">MazeGenerator</span>. Your
+          settings object is copied and clamped first, so it is never changed.</p>
+<pre><code>using SimpleMaze;
+
+var s = new MazeSettings
+{
+    Grid = TopologySpec.Grid(GridShape.Hex, 13, 13),
+    Players = 2,
+    SharedGoal = true,
+    Keys = 1,
+    Gems = 2,
+    TargetDifficulty = 4,
+    Seed = "level-7",                 // empty = a fresh random seed
+};
+
+MazeData one = MazeGenerator.Generate(s);          // one maze from this exact seed, solved and rated
+MazeData good = MazeGenerator.GenerateVerified(s); // tries seeds until the maze meets the request
+List&lt;MazeData&gt; pack = MazeGenerator.GenerateBatch(s, 10);   // seeds level-7-0 to level-7-9, each verified</code></pre>
+        <p>Each one has an <span class="k">Async</span> version that runs on a background thread and takes a
+          <span class="k">CancellationToken</span>. In Unity, <span class="k">await</span> carries on on the main
+          thread afterwards. <span class="k">GenerateBatchAsync</span> also reports progress:</p>
+<pre><code>var progress = new Progress&lt;int&gt;(n =&gt; Debug.Log($"{n} of 10 done"));
+List&lt;MazeData&gt; mazes = await MazeGenerator.GenerateBatchAsync(s, 10, progress, cancel.Token);</code></pre>
+        <p>A custom shape comes from <span class="k">ShapeMask.FromRows</span>, <span class="k">ShapeMask.FromText</span>
+          or <span class="k">ShapeMask.FromPixels</span>, which reads raw RGBA bytes, so set
+          <span class="k">Shape = ShapeKind.Custom</span> and <span class="k">ShapeMask</span> on the settings:</p>
+<pre><code>s.Shape = ShapeKind.Custom;
+s.ShapeMask = ShapeMask.FromRows(
+    "..##...##..",
+    ".####.####.",
+    "###########",
+    ".#########.",
+    "..#######..",
+    "....###....");</code></pre>
+        <p>See the <a href="api-reference.html">API Reference</a> for everything on <span class="k">MazeData</span>.</p>
+      </div>
+
+    </main>
+  </div>
+
+  <div class="footer">
+    <p>Simple Maze by Living Failure. <a href="about.html">About and support</a></p>
+  </div>
+
+</div>
+</body>
+</html>

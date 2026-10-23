@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simple Maze - Troubleshooting</title>
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+<div class="page-wrap">
+
+  <div class="format-selector" id="top">
+    <span class="format-label">View:</span>
+    <a href="index.html" class="format-link">Multi-Page</a>
+    <a href="single-page.html" class="format-link">Single Page</a>
+  </div>
+
+  <nav class="navbar"><ul>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="quick-start.html">Quick Start</a></li>
+    <li><a href="generating.html">Generating</a></li>
+    <li><a href="api-reference.html">API Reference</a></li>
+    <li><a href="demos.html">Demos</a></li>
+    <li><a href="troubleshooting.html" class="active">Troubleshooting</a></li>
+    <li><a href="about.html">About</a></li>
+  </ul></nav>
+
+  <div class="hero">
+    <h1>Troubleshooting</h1>
+    <p class="tagline">What a note means, why a maze came out the way it did, and what to change.</p>
+  </div>
+
+  <div class="page-layout">
+    <aside class="toc">
+      <h3>On this page</h3>
+      <ul>
+        <li><a href="#notes">Reading the notes</a></li>
+        <li><a href="#stars">The stars are off</a></li>
+        <li><a href="#fewer">Fewer gimmicks than I asked for</a></li>
+        <li><a href="#stuck">"Can get stuck"</a></li>
+        <li><a href="#verified">"Not verified"</a></li>
+        <li><a href="#race">The race isn't fair</a></li>
+        <li><a href="#step">Roll or weave was ignored</a></li>
+        <li><a href="#shape">My shape looks wrong</a></li>
+        <li><a href="#slow">Generation feels slow</a></li>
+        <li><a href="#keys">The demo ignores the keyboard</a></li>
+        <li><a href="#hdrp">HDRP looks dark, or ignores my volumes</a></li>
+        <li><a href="#progress">Resetting the demo's progress</a></li>
+        <li><a href="#seeds">Seeds and versions</a></li>
+        <li><a href="#console">Console messages</a></li>
+        <li><a href="#ask">Still stuck</a></li>
+      </ul>
+    </aside>
+    <main class="content">
+
+      <div class="section">
+        <h2 id="notes">Reading the notes</h2>
+        <p>Whenever the generator adjusts something, it writes a note on the maze instead of quietly giving you less.
+          The notes are listed under <strong>Generation report</strong> in the analysis pane, and in
+          <span class="k">MazeData.Notes</span> from code. Each one starts with what it is about, such as "Keys:",
+          "Players:" or "Target difficulty:", and the sections below explain the common ones.
+          <span class="k">MazeAudit.MeetsRequest(maze)</span> tells you whether a maze got everything its settings asked
+          for, and a pack's <strong>Re-roll &gt; Fallbacks</strong> replaces every maze that didn't.</p>
+      </div>
+
+      <div class="section">
+        <h2 id="stars">"Target difficulty: 4 stars not found in 60 tries; closest was 3."</h2>
+        <p>The stars come mostly from the par, so the board size sets what a maze can rate. A small board can't reach 5
+          stars and a huge one rarely rates 1. To hit a target:</p>
+        <ul>
+          <li>make the board bigger for more stars, or smaller for fewer;</li>
+          <li>try another algorithm: long corridors make long routes, so on a 15 by 15 square board Recursive Backtracker
+            mazes average 4.5 stars, Hunt and Kill 4.0, and Prim 2.9;</li>
+          <li>raise <strong>Max attempts</strong> under Advanced, or press <strong>Auto</strong>, which raises it to 150
+            for 4 and 5 star targets.</li>
+        </ul>
+        <p>The rules behind the stars are on the <a href="generating.html#stars">Generating</a> page.</p>
+      </div>
+
+      <div class="section">
+        <h2 id="fewer">Fewer gimmicks than I asked for</h2>
+        <p>Gimmicks are only placed where they do their job, and the generator says when it couldn't fit them all:</p>
+        <ul>
+          <li><strong>"Keys: the maze's loops (or portals) leave room for 1 of 3 doors that can't be walked
+            around."</strong> A door only counts when it's truly in the way, and loops give the player ways round it.
+            Lower Braid and Extra loops, or turn on <strong>Shortcut doors</strong> to allow doors that can be walked
+            around. The same goes for switches and their gates.</li>
+          <li><strong>"Keys: the way to the goal is too short for 4 doors."</strong> Use a bigger board, or Farthest
+            endpoints for a longer way.</li>
+          <li><strong>"Portals: room for 1 of 3 pairs the solution would actually use."</strong> Each portal must shorten
+            the way, so it needs a long way with loops. A bigger board or more loops allows more.</li>
+          <li><strong>"Gems: room for 2 of 5."</strong> Gems go off the way, in dead ends first, and each one must be
+            collectable together with the others. A small board has few such spots, and on a rolling board a gem also has
+            to be reachable without getting stuck. Use a bigger board.</li>
+          <li><strong>"Gimmicks: no layout with traps was solvable in 8 tries; dropped the traps."</strong> That type
+            couldn't be made to work with everything else on this board, so it was left out and the rest kept.</li>
+        </ul>
+        <div class="callout tip"><p>As a rule of thumb about one key or switch fits per 40 cells, and
+          <strong>Auto</strong> lowers the counts to that.</p></div>
+      </div>
+
+      <div class="section">
+        <h2 id="stuck">"Can get stuck"</h2>
+        <p>The analysis pane warns when a player can reach a position it can no longer finish from. One-way sides,
+          switches and rolling can all cause it. Rolling mazes have it very often, just like ice puzzles, so it is
+          reported rather than forbidden by default. You can:</p>
+        <ul>
+          <li>turn on <strong>No soft-locks</strong> so only mazes without it are accepted (on Roll, raise Braid close to
+            1 as well, or press <strong>Auto</strong>);</li>
+          <li>or keep the maze and give players a Restart and Undo, as the demo does.</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h2 id="verified">"Not verified" or "the state budget ran out"</h2>
+        <p>The solver explores every position the players can reach, counting keys, gems and switch flips. Several
+          rolling players, many keys and gems, or a very large board can need more positions than the budget allows, and
+          then the maze is marked not verified instead of guessed. Raise <strong>State budget</strong> under Advanced (up
+          to 5,000,000), or use a smaller board, fewer players or fewer gimmicks. Several rolling players need the most,
+          and Auto raises the budget to 2,000,000 for them.</p>
+      </div>
+
+      <div class="section">
+        <h2 id="race">The race isn't fair</h2>
+        <p>"Players: the gimmicks leave no other start exactly as far from the goal as player 1's (pars 36, 32), so the
+          race isn't fair." On Step, every player in a race needs the same par, and with gimmicks the other players' starts are
+          picked after the gimmicks are placed, using each cell's real par. On some boards no such cells exist. Verified
+          generation, which the window always uses, skips these mazes and tries the next seed, so you only see this note
+          from <span class="k">MazeGenerator.Generate</span> or after every attempt missed. A bigger board or fewer
+          gimmicks helps.</p>
+      </div>
+
+      <div class="section">
+        <h2 id="step">Roll or weave was ignored</h2>
+        <ul>
+          <li><strong>"Movement: Roll needs a Square or Hex board"</strong> or <strong>"Roll keeps to one
+            floor"</strong>: rolling needs straight lines, which Triangle and Circular boards and stacked floors don't
+            have, so those mazes use Step.</li>
+          <li><strong>"Movement: no start could roll into the goal on this maze"</strong>: rolling needs loops. Raise
+            Braid (Auto sets at least 0.6).</li>
+          <li><strong>"Weave: crossings need a Square board"</strong>: weave crossings only exist on Square
+            boards.</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h2 id="shape">My shape looks wrong</h2>
+        <ul>
+          <li><strong>"Shape: Heart leaves only 20 cells on this board, which is too few, so the whole board was
+            used."</strong> Use a bigger board or a higher Fill.</li>
+          <li><strong>"Shape: 4 separate pieces; joined them with 3 bridges."</strong> The shape fell apart, for example
+            into the letters of a word, and was joined up. Turn off Connect pieces to keep only the largest piece
+            instead.</li>
+          <li><strong>Text:</strong> give it a wide board, about 6 cells across per letter and at least 9 rows. On a Square
+            board the font's diagonal strokes only touch at their corners, so a letter like M can lose its diagonals and
+            read as H. Check the preview, and try another word or grid if it matters.</li>
+          <li><strong>"Nothing in this image counts as inside."</strong> Switch <strong>Inside is</strong> between Dark,
+            Light and Opaque, or move the threshold slider.</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h2 id="slow">Generation feels slow</h2>
+        <p>Plain mazes are fast at any size. Measured on a desktop PC outside Unity (your machine and Unity's runtime
+          will differ):</p>
+        <table>
+          <tr><th>Maze</th><th>Time</th></tr>
+          <tr><td>Square 64 by 64, or circular with 40 rings</td><td>under 10 ms</td></tr>
+          <tr><td>Square 64 by 64 with 8 floors</td><td>about 30 ms</td></tr>
+          <tr><td>Hex 13 by 13, a race of 4 with a key and gems, verified</td><td>under 10 ms</td></tr>
+          <tr><td>Square 30 by 30 with 6 keys, 8 gems, 4 switches and 4 portals</td><td>0.5 to 1.4 s</td></tr>
+          <tr><td>Square 14 by 14, 4 rolling players with gems</td><td>1.3 to 4.7 s</td></tr>
+        </table>
+        <p>The costly part is solving, which grows with every key, gem and switch (each one multiplies the positions to
+          search) and most of all with several rolling players, who are solved together. Every gimmick type is solved
+          again after it is placed, up to 8 times. Generation runs on a background thread in the window and with the
+          <span class="k">Async</span> methods, so it never freezes the editor or your game, and it can be
+          cancelled.</p>
+      </div>
+
+      <div class="section">
+        <h2 id="keys">The demo ignores the keyboard or the mouse</h2>
+        <p>The demo uses the Input System package. Set <strong>Project Settings &gt; Player &gt; Active Input
+          Handling</strong> to <em>Input System Package</em> or <em>Both</em>. The hub and the HUD make an EventSystem
+          with the Input System's UI module when the scene has none. If your scene already has an EventSystem, its input
+          module has to match your input handling.</p>
+      </div>
+
+      <div class="section">
+        <h2 id="hdrp">HDRP looks dark, or ignores my volumes</h2>
+        <p>Out of the box HDRP uses physical light units, automatic exposure and sky lighting, which would make the demo
+          dark and tinted. <span class="k">MazeDemo.HdrpLook</span> (on by default) adds a global volume at priority 10
+          with a fixed exposure and a gradient sky, and sets the sun in lux, so the demo looks the same as on the other
+          pipelines. If you want your own volumes and lights to take over, turn <span class="k">HdrpLook</span> off.</p>
+      </div>
+
+      <div class="section">
+        <h2 id="progress">Resetting the demo's progress</h2>
+        <p>The demo saves each pack level's best moves in PlayerPrefs, under
+          <code>SimpleMaze.Demo.Best.&lt;pack name&gt;.&lt;level&gt;</code>. Call
+          <span class="k">MazeProgress.Clear(packName, levelCount)</span> to forget a pack, or delete those keys. A pack's
+          progress is filed under its pack name, so renaming a pack starts it fresh.</p>
+      </div>
+
+      <div class="section">
+        <h2 id="seeds">Seeds and versions</h2>
+        <p>The same settings and seed always give the same maze within a version of Simple Maze. A future version that
+          improves the generator may change what a seed produces. Saved assets store the maze itself, not just its seed,
+          so your saved mazes and packs never change. Verified generation stores the seed that actually worked, such as
+          <code>level-7#3</code>, so copying a maze's own seed always rebuilds that exact maze.</p>
+      </div>
+
+      <div class="section">
+        <h2 id="console">Console messages</h2>
+        <ul>
+          <li><strong>"[Simple Maze] Documentation page not found"</strong>: the documentation menu looks for these pages
+            in a folder whose path contains <code>SimpleMaze</code> and <code>Documentation</code>. Keep the
+            Documentation folder inside the Simple Maze folder.</li>
+          <li><strong>"[Simple Maze] Generation failed"</strong>: something went wrong on the generation thread. Please
+            send the message with your settings and seed.</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h2 id="ask">Still stuck</h2>
+        <p>Email <a href="mailto:livingfailuregames@gmail.com">livingfailuregames@gmail.com</a> with your Unity version and,
+          for a maze-specific question, its seed and settings. <strong>Copy seed</strong> and <strong>Copy
+          solution</strong> in the analysis pane make that easy, and a seed rebuilds the maze exactly.</p>
+      </div>
+
+    </main>
+  </div>
+
+  <div class="footer">
+    <p>Simple Maze by Living Failure. <a href="about.html">About and support</a></p>
+  </div>
+
+</div>
+</body>
+</html>

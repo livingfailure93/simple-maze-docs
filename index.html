@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simple Maze - Documentation</title>
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+<div class="page-wrap">
+
+  <div class="format-selector" id="top">
+    <span class="format-label">View:</span>
+    <a href="index.html" class="format-link active">Multi-Page</a>
+    <a href="single-page.html" class="format-link">Single Page</a>
+  </div>
+
+  <nav class="navbar"><ul>
+    <li><a href="index.html" class="active">Home</a></li>
+    <li><a href="quick-start.html">Quick Start</a></li>
+    <li><a href="generating.html">Generating</a></li>
+    <li><a href="api-reference.html">API Reference</a></li>
+    <li><a href="demos.html">Demos</a></li>
+    <li><a href="troubleshooting.html">Troubleshooting</a></li>
+    <li><a href="about.html">About</a></li>
+  </ul></nav>
+
+  <div class="hero">
+    <h1>Simple Maze</h1>
+    <p class="tagline">Mazes for Unity that are generated, solved exactly and rated, on square, hex, triangle and circular grids.</p>
+    <p class="sub-tagline">Simple Maze builds a maze from your settings, then proves it can be solved and works out its
+      <strong>par</strong>, the fewest moves it takes. It can add keys and doors, switches and gates, gems, traps,
+      one-way sides and portals, stack up to 8 floors joined by stairs, put up to 4 players on the board, and make
+      the players roll like on ice instead of stepping. Every maze is rated 1 to 5 stars and can be saved as a
+      ScriptableObject, exported as a PNG or SVG picture, or played in the included 3D demo.</p>
+    <div class="pill">Version 1.0, by Living Failure</div>
+  </div>
+
+  <div class="page-layout">
+    <aside class="toc">
+      <h3>On this page</h3>
+      <ul>
+        <li><a href="#what">What it is</a></li>
+        <li><a href="#grids">The four grids</a></li>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#how">How it works</a></li>
+        <li><a href="#verified">Why "verified"</a></li>
+        <li><a href="#start">Getting started</a></li>
+      </ul>
+    </aside>
+    <main class="content">
+
+      <div class="section">
+        <h2 id="what">What it is</h2>
+        <p>Simple Maze is a maze generator with a solver built in. You choose the grid, the size and what goes in the
+          maze, and it carves one for you. Then it solves the maze exactly, so you know for certain that it can be
+          finished, how many moves the best solution takes and how many different best solutions there are.</p>
+        <p>Everything is deterministic. The same settings and the same seed always give the same maze, and every
+          maze keeps the settings and seed it was made from. When the generator can't give you exactly what you
+          asked for, it says so in the maze's notes instead of quietly handing you something else.</p>
+      </div>
+
+      <div class="section">
+        <h2 id="grids">The four grids</h2>
+        <div class="feature-grid">
+          <div class="feature-card"><h4>Square</h4><p>Classic square cells with four sides, from 2 by 2 up to
+            64 by 64. The only grid with weave crossings, where a passage tunnels under a corridor.</p></div>
+          <div class="feature-card"><h4>Hex</h4><p>Pointy-top hexagons with six ways out of each cell, up to
+            64 by 64.</p></div>
+          <div class="feature-card"><h4>Triangle</h4><p>Alternating up and down triangles with three sides
+            each, up to 64 by 64.</p></div>
+          <div class="feature-card"><h4>Circular</h4><p>A polar maze: a centre cell inside 2 to 40 rings that
+            split into more cells as they grow, so the cells stay roughly square from the centre to the rim.</p></div>
+        </div>
+        <div class="callout info"><p>Any grid can be stacked into <strong>2 to 8 floors</strong> joined by 1 to 4
+          stairs between each pair of floors, and any grid can be cut to a shape: a circle, ring, heart, star,
+          diamond, cross, a word in the built-in font, or your own picture.</p></div>
+      </div>
+
+      <div class="section">
+        <h2 id="features">Features</h2>
+        <div class="feature-grid">
+          <div class="feature-card"><h4>Proven par</h4><p>The solver searches every position the players can
+            reach, so the par is the true minimum and not an estimate.</p></div>
+          <div class="feature-card"><h4>Soft-lock check</h4><p>Every maze reports whether a player can get stuck
+            somewhere they can no longer finish from, and <span class="k">NoSoftLocks</span> only accepts mazes
+            where that can't happen.</p></div>
+          <div class="feature-card"><h4>Difficulty stars</h4><p>A 1 to 5 star rating worked out from the par,
+            the real decisions on the way and the gimmicks, calibrated so each star covers about a fifth of
+            everyday mazes. Ask for a star count and the generator keeps trying until it gets one.</p></div>
+          <div class="feature-card"><h4>Gimmicks</h4><p>Up to 6 keys and doors, 4 switches with up to 3 gates
+            each, 8 gems, 24 one-way sides, 4 portal pairs and traps, all placed so the maze stays solvable and
+            proven together.</p></div>
+          <div class="feature-card"><h4>Players and movement</h4><p>Up to 4 players, either racing to one goal
+            from starts the same distance away or each heading to a goal of its own. Players step one cell at a
+            time, or roll in a straight line until something stops them (Square and Hex).</p></div>
+          <div class="feature-card"><h4>Six carving algorithms</h4><p>Recursive Backtracker, Prim, Kruskal,
+            Wilson, Hunt-and-Kill and Growing Tree, each with its own look, plus braid, extra loops, open rooms
+            and holes.</p></div>
+          <div class="feature-card"><h4>Shapes from pictures</h4><p>Drop an image into the generator window and
+            its dark, light or opaque areas become the maze.</p></div>
+          <div class="feature-card"><h4>Printable export</h4><p>Save any maze as a PNG or SVG: a black on white
+            puzzle sheet, an answer key with the solution drawn in, or the full colour view with every
+            gimmick.</p></div>
+          <div class="feature-card"><h4>ScriptableObjects</h4><p>Save single mazes or ordered packs, with
+            inspectors that preview, re-check and regenerate them.</p></div>
+          <div class="feature-card"><h4>Play rules included</h4><p><span class="k">MazeRules</span> tells your
+            game what a move does, using the same rules the solver counted with, so the game and the par always
+            agree. It also gives hints from any position.</p></div>
+          <div class="feature-card"><h4>Editor tooling</h4><p>One Maze Generator window with 19 presets, an Auto
+            button that fixes settings that fight each other, and generation on a background thread with a
+            progress bar and Cancel.</p></div>
+          <div class="feature-card"><h4>A 3D demo</h4><p>Five game modes with endless mazes and 50 ready-made
+            levels, built entirely in code. It works in URP, HDRP and the Built-in pipeline.</p></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2 id="how">How it works</h2>
+        <div class="step"><div class="step-number">1</div><div class="step-content">
+          <h4>Configure</h4><p>Pick a grid, its size and what goes in the maze, in the Maze Generator window or
+          with a <span class="k">MazeSettings</span> object in code.</p></div></div>
+        <div class="step"><div class="step-number">2</div><div class="step-content">
+          <h4>Build</h4><p>The board is cut to its shape, carved, and given its rooms, loops and crossings. Then
+          the start and goal are placed, the extra players are added and the gimmicks are set out along the
+          way.</p></div></div>
+        <div class="step"><div class="step-number">3</div><div class="step-content">
+          <h4>Solve and rate</h4><p>The solver explores every reachable position, counting keys held, gems taken
+          and switches flipped. It records the par, how many best solutions exist, one of them, whether anyone can
+          get stuck, and the star rating.</p></div></div>
+        <div class="step"><div class="step-number">4</div><div class="step-content">
+          <h4>Use it</h4><p>Save it as an asset, export a picture of it, play it in the demo, or read the
+          <span class="k">MazeData</span> in your own scripts.</p></div></div>
+      </div>
+
+      <div class="section">
+        <h2 id="verified">Why "verified"</h2>
+        <p>Lots of generators make mazes that are probably fine. Simple Maze proves the things you design
+          around:</p>
+        <ul>
+          <li><strong>The par is real.</strong> It is the shortest solution that exists, counting every key, door,
+            gate and portal, so a 40-move maze really takes 40 moves.</li>
+          <li><strong>Gimmicks are part of the proof.</strong> Doors, gates and gems are solved together with the
+            maze, and by default every door and every switch's first gate stands in the way, so its key or switch
+            is really needed.</li>
+          <li><strong>Getting stuck is detected.</strong> One-way sides, traps and rolling can leave a player
+            somewhere they can't finish from. Every maze reports it, and you can ask for mazes where it never
+            happens.</li>
+          <li><strong>Misses are reported.</strong> When a target star count, a coverage or a gimmick can't be
+            met, the maze's notes say what happened and what you got instead.</li>
+        </ul>
+        <div class="callout warning"><p><strong>One honest limit:</strong> the solver has a state budget (500,000
+          positions by default). A very large maze with many players and gimmicks can run past it, and then the
+          par is reported as not proven rather than guessed. Raise <span class="k">StateBudget</span> or make the
+          maze smaller.</p></div>
+      </div>
+
+      <div class="section">
+        <h2 id="start">Getting started</h2>
+        <p>Open <strong>Window &gt; Living Failure &gt; Simple Maze &gt; Maze Generator</strong>, pick a preset,
+          press <strong>Generate</strong> and look at the analysis on the right. Then open the demo scene and play.
+          The <a href="quick-start.html">Quick Start</a> walks through the whole loop in about five minutes.</p>
+      </div>
+
+    </main>
+  </div>
+
+  <div class="footer">
+    <p>Simple Maze by Living Failure. <a href="about.html">About and support</a></p>
+  </div>
+
+</div>
+</body>
+</html>
